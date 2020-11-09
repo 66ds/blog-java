@@ -1,0 +1,24 @@
+spring:
+  datasource:
+    url: jdbc:mysql://111.229.248.18:3306/blog?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=GMT%2B8
+    username: root
+    password: Qq13912758169
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+  redis:
+    host: 111.229.248.18
+    port: 6379
+  sms:
+    path: /sms/sendv2
+    host: https://zwp.market.alicloudapi.com
+    appcode: a8a650913b25415e81b3ab9d90bb041e
+mybatis-plus:
+  mapper-locations: classpath*:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+      logic-delete-value: 0 #逻辑删除值
+      logic-not-delete-value: 1 #逻辑未删除值
+server:
+  port: 12000
