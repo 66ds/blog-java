@@ -102,6 +102,12 @@
             <artifactId>spring-security-core</artifactId>
             <version>5.0.12.RELEASE</version>
         </dependency>
+        <!--jwt工具包-->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt</artifactId>
+            <version>0.7.0</version>
+        </dependency>
     </dependencies>
 
     <build>

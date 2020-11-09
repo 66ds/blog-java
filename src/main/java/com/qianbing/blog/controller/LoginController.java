@@ -7,6 +7,7 @@ import com.qianbing.blog.exception.BizCodeExcetionEnum;
 import com.qianbing.blog.exception.PhoneExistException;
 import com.qianbing.blog.service.UsersService;
 import com.qianbing.blog.utils.R;
+import com.qianbing.blog.vo.LoginVo;
 import com.qianbing.blog.vo.RegisterVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,13 +47,20 @@ public class LoginController {
             }
         }
         //设置定时时间
-        String randomId =  UUID.randomUUID().toString().substring(0,5);
+        String randomId =  (int)((Math.random()*9+1)*10000)+"";
         String uuid = randomId + "_" + System.currentTimeMillis();
         stringRedisTemplate.opsForValue().set(SmsContrant.SMS_CODE+phone,uuid,300, TimeUnit.SECONDS);
         return smsComponent.send(phone,randomId);
     }
 
-    @PostMapping("user/register")
+    /**
+     * 用户注册
+     * @param registerVo
+     * @param result
+     * @param httpServletRequest
+     * @return
+     */
+    @PostMapping("/user/register")
     @ResponseBody
     public R userRegister(@RequestBody @Validated  RegisterVo registerVo, BindingResult result, HttpServletRequest httpServletRequest){
         //注册之前验证
@@ -69,23 +77,36 @@ public class LoginController {
         if(!StringUtils.isEmpty(s)){
             String[] verficaty = s.split("_");
             if(verficaty[0].equals(registerVo.getCode())){
-                R r = null;
                 //删除验证码,令牌
                 stringRedisTemplate.delete(SmsContrant.SMS_CODE+registerVo.getUserTelephoneNumber());
                 //进行注册
                 try {
-                    r = usersService.register(registerVo,httpServletRequest);
+                    return usersService.register(registerVo,httpServletRequest);
                 }catch (Exception e){
-                    if(e instanceof PhoneExistException){
-                        return R.error(BizCodeExcetionEnum.USER_NAME_EXIST_EXCEPTION.getCode(),BizCodeExcetionEnum.USER_NAME_EXIST_EXCEPTION.getMsg());
-                    }
+                    return R.error(BizCodeExcetionEnum.USER_NAME_EXIST_EXCEPTION.getCode(),BizCodeExcetionEnum.USER_NAME_EXIST_EXCEPTION.getMsg());
                 }
-                return r;
             }else{
                return R.error(SmsContrant.CODE_ERROR);
             }
         }else {
             return R.error(SmsContrant.CODE_ERROR);
         }
+    }
+
+    /**
+     * 用户登录
+     * @param vo
+     * @param result
+     * @return
+     */
+    @PostMapping("/user/login")
+    @ResponseBody
+    public R login(@RequestBody @Validated LoginVo vo, BindingResult result){
+        if(result.hasErrors()){
+            for (FieldError fieldError : result.getFieldErrors()) {
+                return R.error(fieldError.getDefaultMessage());
+            }
+        }
+        return usersService.login(vo);
     }
 }

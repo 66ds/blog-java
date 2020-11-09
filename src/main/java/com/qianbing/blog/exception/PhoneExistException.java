@@ -1,8 +1,11 @@
 package com.qianbing.blog.exception;
 
+import com.qianbing.blog.constrant.SmsContrant;
+import com.qianbing.blog.constrant.UserContrant;
+
 public class PhoneExistException extends RuntimeException {
 
     public PhoneExistException(){
-        super("手机号已存在");
+        super(UserContrant.PHONE_EXIST);
     }
 }

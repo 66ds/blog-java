@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.qianbing.blog.entity.UsersEntity;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
+import com.qianbing.blog.vo.LoginVo;
 import com.qianbing.blog.vo.RegisterVo;
 
 
@@ -22,5 +23,7 @@ public interface UsersService extends IService<UsersEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     R register(RegisterVo registerVo, HttpServletRequest httpServletRequest);
+
+    R login(LoginVo vo);
 }
 

@@ -1,6 +1,8 @@
 package com.qianbing.blog.service.impl;
 
 
+import com.qianbing.blog.constrant.SmsContrant;
+import com.qianbing.blog.constrant.UserContrant;
 import com.qianbing.blog.exception.PhoneExistException;
 import com.qianbing.blog.utils.GetIpAddress;
 import com.qianbing.blog.utils.Query;
@@ -10,6 +12,8 @@ import com.qianbing.blog.entity.UsersEntity;
 import com.qianbing.blog.service.UsersService;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
+import com.qianbing.blog.utils.jwt.JWTUtils;
+import com.qianbing.blog.vo.LoginVo;
 import com.qianbing.blog.vo.RegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -62,6 +66,26 @@ public class UsersServiceImpl extends ServiceImpl<UsersDao, UsersEntity> impleme
         //TODO其他默认信息
         this.baseMapper.insert(usersEntity);
         return R.ok();
+    }
+
+    @Override
+    public R login(LoginVo vo) {
+        String phone = vo.getUserTelephoneNumber();
+        UsersEntity usersEntity = this.baseMapper.selectOne(new QueryWrapper<UsersEntity>().eq("user_telephone_number", phone));
+        if(usersEntity == null){
+            //登录失败
+            return R.error(UserContrant.LOGIN_ERROR);
+        }else{
+            String pass = usersEntity.getUserPassword();
+            BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            boolean matches = passwordEncoder.matches(vo.getUserPassword(), pass);
+            if(matches){
+                String token = JWTUtils.geneJsonWebToken(usersEntity);
+                return R.ok().setData(token);
+            }else {
+                return R.error(UserContrant.LOGIN_ERROR);
+            }
+        }
     }
 
     private void checkPhone(String phone) {

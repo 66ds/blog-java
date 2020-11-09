@@ -16,9 +16,7 @@ class BlogJavaApplicationTests {
     private UsersService usersService;
     @Test
     void contextLoads() {
-        Map map = new HashMap();
-        PageUtils pageUtils = usersService.queryPage(map);
-        System.out.println(pageUtils.getList());
+        System.out.println((int)((Math.random()*9+1)*10000));
     }
 
 }
