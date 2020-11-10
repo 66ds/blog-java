@@ -23,6 +23,7 @@ import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @Controller
+@RequestMapping("/api/v1/pub/")
 public class LoginController {
 
     @Autowired

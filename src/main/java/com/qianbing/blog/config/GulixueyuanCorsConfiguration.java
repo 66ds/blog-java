@@ -1,38 +1,29 @@
 package com.qianbing.blog.config;
-
-
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Component;
-
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+/**
+ * 实现基本的跨域请求
+ * @author linhongcun
+ *
+ */
 @Configuration
-    @Component
-    public class GulixueyuanCorsConfiguration implements Filter {
-
-        @Override
-        public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-                throws IOException, ServletException {
-            HttpServletResponse res = (HttpServletResponse) response;
-            res.addHeader("Access-Control-Allow-Credentials", "true");
-            res.addHeader("Access-Control-Allow-Origin", "*");
-            res.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT");
-            res.addHeader("Access-Control-Allow-Headers", "Content-Type,X-CAF-Authorization-Token,sessionToken,X-TOKEN");
-            if (((HttpServletRequest) request).getMethod().equals("OPTIONS")) {
-                response.getWriter().println("ok");
-                return;
-            }
-            chain.doFilter(request, response);
-        }
-        @Override
-        public void destroy() {
-        }
-        @Override
-        public void init(FilterConfig filterConfig) throws ServletException {
-        }
+public class GulixueyuanCorsConfiguration{
+    @Bean
+    public CorsFilter corsFilter() {
+        final UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        final CorsConfiguration corsConfiguration = new CorsConfiguration();
+        /*是否允许请求带有验证信息*/
+        corsConfiguration.setAllowCredentials(true);
+        /*允许访问的客户端域名*/
+        corsConfiguration.addAllowedOrigin("*");
+        /*允许服务端访问的客户端请求头*/
+        corsConfiguration.addAllowedHeader("*");
+        /*允许访问的方法名,GET POST等*/
+        corsConfiguration.addAllowedMethod("*");
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+        return new CorsFilter(urlBasedCorsConfigurationSource);
     }
-
+}

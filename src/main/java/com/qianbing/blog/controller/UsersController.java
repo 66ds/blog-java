@@ -25,7 +25,7 @@ import com.qianbing.blog.utils.R;
  * @date 2020-11-09 09:12:57
  */
 @RestController
-@RequestMapping("admin/users")
+@RequestMapping("/api/v1/pri/users")
 public class UsersController {
     @Autowired
     private UsersService usersService;
