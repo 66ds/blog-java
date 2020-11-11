@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -19,50 +21,28 @@ import lombok.Data;
 public class ArticlesEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * $column.comments
-	 */
 	@TableId
 	private Long articleId;
-	/**
-	 * $column.comments
-	 */
+
 	private Long userId;
-	/**
-	 * $column.comments
-	 */
+
 	private String articleTitle;
-	/**
-	 * $column.comments
-	 */
+
 	private String articleContent;
-	/**
-	 * $column.comments
-	 */
+
 	private Long articleViews;
-	/**
-	 * $column.comments
-	 */
+
 	private Long articleCommentCount;
-	/**
-	 * $column.comments
-	 */
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date articleDate;
-	/**
-	 * $column.comments
-	 */
+
 	private Long articleLikeCount;
-	/**
-	 * $column.comments
-	 */
+
 	private Integer articleType;
-	/**
-	 * $column.comments
-	 */
+
 	private Integer articleUp;
-	/**
-	 * $column.comments
-	 */
+
 	private Integer articleSupport;
 
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
 
 
 /**
@@ -36,8 +37,7 @@ public class ArticlesController {
     //@RequiresPermissions("${moduleName}:articles:list")
     public R list(@RequestParam Map<String, Object> params){
         PageUtils page = articlesService.queryPage(params);
-
-        return R.ok().put("page", page);
+        return R.ok().put("data", page);
     }
 
 
@@ -55,12 +55,13 @@ public class ArticlesController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
+    @RequestMapping("/add")
     //@RequiresPermissions("${moduleName}:articles:save")
-    public R save(@RequestBody ArticlesEntity articles){
-		articlesService.save(articles);
-
-        return R.ok();
+    public R save(@RequestBody ArticlesEntity articles, HttpServletRequest request){
+        //获取发表用户id
+        Integer id = (Integer) request.getAttribute("id");
+        articles.setUserId(id.longValue());
+        return articlesService.saveArticles(articles);
     }
 
     /**

@@ -2,6 +2,7 @@ package com.qianbing.blog.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.qianbing.blog.entity.ArticlesEntity;
 import com.qianbing.blog.utils.PageUtils;
+import com.qianbing.blog.utils.R;
 
 
 import java.util.Map;
@@ -16,5 +17,6 @@ import java.util.Map;
 public interface ArticlesService extends IService<ArticlesEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+    R saveArticles(ArticlesEntity articlesEntity);
 }
 
