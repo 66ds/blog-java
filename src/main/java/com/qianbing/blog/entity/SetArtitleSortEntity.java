@@ -22,11 +22,13 @@ public class SetArtitleSortEntity implements Serializable {
 	/**
 	 * $column.comments
 	 */
-	@TableId
 	private Long articleId;
 	/**
 	 * $column.comments
 	 */
 	private Long sortId;
+
+	@TableId
+	private Long id;
 
 }

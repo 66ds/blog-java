@@ -5,6 +5,7 @@ import com.qianbing.blog.entity.SetArtitleLabelEntity;
 import com.qianbing.blog.utils.PageUtils;
 
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,5 +18,7 @@ import java.util.Map;
 public interface SetArtitleLabelService extends IService<SetArtitleLabelEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    List<Long> getLabelIds(Long articleId);
 }
 

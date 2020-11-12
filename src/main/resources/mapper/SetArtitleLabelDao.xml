@@ -7,6 +7,7 @@
     <resultMap type="com.qianbing.blog.entity.SetArtitleLabelEntity" id="setArtitleLabelMap">
         <result property="articleId" column="article_id"/>
         <result property="labelId" column="label_id"/>
+        <result property="id" column="id"/>
     </resultMap>
 
 

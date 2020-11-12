@@ -7,6 +7,7 @@ import com.qianbing.blog.entity.ArticlesEntity;
 import com.qianbing.blog.service.ArticlesService;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
+import com.qianbing.blog.vo.ArticlesVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,12 +43,11 @@ public class ArticlesController {
 
 
     /**
-     * 信息
+     * 查询单篇文章信息
      */
     @RequestMapping("/info/{articleId}")
     public R info(@PathVariable("articleId") Long articleId){
-		ArticlesEntity articles = articlesService.getById(articleId);
-
+		ArticlesEntity articles = articlesService.findArticleById(articleId);
         return R.ok().put("data", articles);
     }
 
@@ -63,12 +63,11 @@ public class ArticlesController {
      * 保存
      */
     @RequestMapping("/add")
-    //@RequiresPermissions("${moduleName}:articles:save")
-    public R save(@RequestBody ArticlesEntity articles, HttpServletRequest request){
+    public R save(@RequestBody ArticlesVo vo, HttpServletRequest request){
         //获取发表用户id
         Integer id = (Integer) request.getAttribute("id");
-        articles.setUserId(id.longValue());
-        return articlesService.saveArticles(articles);
+        vo.setUserId(id.longValue());
+        return articlesService.saveArticles(vo);
     }
 
 
@@ -78,8 +77,8 @@ public class ArticlesController {
      */
     @RequestMapping("/update")
     //@RequiresPermissions("${moduleName}:articles:update")
-    public R update(@RequestBody ArticlesEntity articles){
-		return articlesService.updateArticles(articles);
+    public R update(@RequestBody ArticlesVo vo){
+		return articlesService.updateArticles(vo);
     }
 
     /**

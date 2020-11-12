@@ -21,11 +21,13 @@ public class SetArtitleLabelEntity implements Serializable {
 	/**
 	 * $column.comments
 	 */
-	@TableId
 	private Long articleId;
 	/**
 	 * $column.comments
 	 */
 	private Long labelId;
+
+	@TableId
+	private Long id;
 
 }

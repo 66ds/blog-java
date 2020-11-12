@@ -3,6 +3,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.qianbing.blog.entity.ArticlesEntity;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
+import com.qianbing.blog.vo.ArticlesVo;
 
 
 import java.util.Map;
@@ -18,10 +19,13 @@ public interface ArticlesService extends IService<ArticlesEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    R saveArticles(ArticlesEntity articlesEntity);
+    R saveArticles(ArticlesVo vo);
 
-    R updateArticles(ArticlesEntity articles);
+    R updateArticles(ArticlesVo articlesVo);
 
     R delete(Long articleId);
+
+    ArticlesEntity findArticleById(Long articleId);
+
 }
 
