@@ -35,7 +35,7 @@ public class ArticlesController {
      */
     @RequestMapping("/list")
     //@RequiresPermissions("${moduleName}:articles:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestBody Map<String, Object> params){
         PageUtils page = articlesService.queryPage(params);
         return R.ok().put("data", page);
     }
@@ -45,11 +45,18 @@ public class ArticlesController {
      * 信息
      */
     @RequestMapping("/info/{articleId}")
-    //@RequiresPermissions("${moduleName}:articles:info")
     public R info(@PathVariable("articleId") Long articleId){
 		ArticlesEntity articles = articlesService.getById(articleId);
 
-        return R.ok().put("articles", articles);
+        return R.ok().put("data", articles);
+    }
+
+    /**
+     * 删除单篇文章
+     */
+    @RequestMapping("/delete/{articleId}")
+    public R delete(@PathVariable("articleId") Long articleId){
+        return articlesService.delete(articleId);
     }
 
     /**
@@ -64,26 +71,23 @@ public class ArticlesController {
         return articlesService.saveArticles(articles);
     }
 
+
+
     /**
      * 修改
      */
     @RequestMapping("/update")
     //@RequiresPermissions("${moduleName}:articles:update")
     public R update(@RequestBody ArticlesEntity articles){
-		articlesService.updateById(articles);
-
-        return R.ok();
+		return articlesService.updateArticles(articles);
     }
 
     /**
      * 删除
      */
-    @RequestMapping("/delete")
-    //@RequiresPermissions("${moduleName}:articles:delete")
-    public R delete(@RequestBody Long[] articleIds){
+    @RequestMapping("/batch")
+    public R delete(@RequestParam(value = "articleIds") Long[] articleIds){
 		articlesService.removeByIds(Arrays.asList(articleIds));
-
         return R.ok();
     }
-
 }

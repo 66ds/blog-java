@@ -17,6 +17,11 @@ import java.util.Map;
 public interface ArticlesService extends IService<ArticlesEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
     R saveArticles(ArticlesEntity articlesEntity);
+
+    R updateArticles(ArticlesEntity articles);
+
+    R delete(Long articleId);
 }
 

@@ -11,11 +11,13 @@
         <result property="articleContent" column="article_content"/>
         <result property="articleViews" column="article_views"/>
         <result property="articleCommentCount" column="article_comment_count"/>
+        <result property="articleContentOrigin" column="article_content_origin"/>
         <result property="articleDate" column="article_date"/>
         <result property="articleLikeCount" column="article_like_count"/>
         <result property="articleType" column="article_type"/>
         <result property="articleUp" column="article_up"/>
         <result property="articleSupport" column="article_support"/>
+        <result property="isDelete" column="is_delete"/>
     </resultMap>
 
 

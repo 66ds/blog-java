@@ -1,10 +1,13 @@
 package com.qianbing.blog.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
@@ -30,6 +33,8 @@ public class ArticlesEntity implements Serializable {
 
 	private String articleContent;
 
+	private String articleContentOrigin;
+
 	private Long articleViews;
 
 	private Long articleCommentCount;
@@ -44,5 +49,12 @@ public class ArticlesEntity implements Serializable {
 	private Integer articleUp;
 
 	private Integer articleSupport;
+
+	@TableLogic//实现逻辑删除
+	private Integer isDelete;
+
+	//对应多个标签
+	@TableField(exist = false)
+	private List<LabelsEntity> labelsEntityList;
 
 }
