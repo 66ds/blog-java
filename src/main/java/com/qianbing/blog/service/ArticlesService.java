@@ -27,5 +27,6 @@ public interface ArticlesService extends IService<ArticlesEntity> {
 
     ArticlesEntity findArticleById(Long articleId);
 
+    R deleteArticle(Long articleId);
 }
 

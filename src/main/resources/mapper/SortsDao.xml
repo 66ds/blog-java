@@ -11,6 +11,7 @@
         <result property="sortDescription" column="sort_description"/>
         <result property="userId" column="user_id"/>
         <result property="parentSortId" column="parent_sort_id"/>
+        <result property="sortTime" column="sort_time"/>
     </resultMap>
 
 

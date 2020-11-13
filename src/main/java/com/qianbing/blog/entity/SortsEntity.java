@@ -1,9 +1,14 @@
 package com.qianbing.blog.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -18,30 +23,23 @@ import lombok.Data;
 public class SortsEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * $column.comments
-	 */
 	@TableId
 	private Long sortId;
-	/**
-	 * $column.comments
-	 */
+
 	private String sortName;
-	/**
-	 * $column.comments
-	 */
+
 	private String sortAlias;
-	/**
-	 * $column.comments
-	 */
+
 	private String sortDescription;
-	/**
-	 * $column.comments
-	 */
+
 	private Long userId;
-	/**
-	 * $column.comments
-	 */
+
 	private Long parentSortId;
+
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date sortTime;
+
+	@TableField(exist = false)
+	private List<SortsEntity> children;
 
 }

@@ -19,8 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 
 
 /**
- * 
- *
  * @author qianbing
  * @email 1532498760@qq.com
  * @date 2020-11-10 15:44:24
@@ -28,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/api/v1/pri/articles")
 public class ArticlesController {
+
     @Autowired
     private ArticlesService articlesService;
 
@@ -35,8 +34,9 @@ public class ArticlesController {
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("${moduleName}:articles:list")
-    public R list(@RequestBody Map<String, Object> params){
+    public R list(@RequestBody Map<String, Object> params,HttpServletRequest request) {
+        Integer userId = (Integer) request.getAttribute("id");
+        params.put("userId",userId);
         PageUtils page = articlesService.queryPage(params);
         return R.ok().put("data", page);
     }
@@ -46,8 +46,8 @@ public class ArticlesController {
      * 查询单篇文章信息
      */
     @RequestMapping("/info/{articleId}")
-    public R info(@PathVariable("articleId") Long articleId){
-		ArticlesEntity articles = articlesService.findArticleById(articleId);
+    public R info(@PathVariable("articleId") Long articleId) {
+        ArticlesEntity articles = articlesService.findArticleById(articleId);
         return R.ok().put("data", articles);
     }
 
@@ -55,15 +55,15 @@ public class ArticlesController {
      * 删除单篇文章
      */
     @RequestMapping("/delete/{articleId}")
-    public R delete(@PathVariable("articleId") Long articleId){
-        return articlesService.delete(articleId);
+    public R delete(@PathVariable("articleId") Long articleId) {
+        return articlesService.deleteArticle(articleId);
     }
 
     /**
      * 保存
      */
     @RequestMapping("/add")
-    public R save(@RequestBody ArticlesVo vo, HttpServletRequest request){
+    public R save(@RequestBody ArticlesVo vo, HttpServletRequest request) {
         //获取发表用户id
         Integer id = (Integer) request.getAttribute("id");
         vo.setUserId(id.longValue());
@@ -71,22 +71,21 @@ public class ArticlesController {
     }
 
 
-
     /**
      * 修改
      */
     @RequestMapping("/update")
     //@RequiresPermissions("${moduleName}:articles:update")
-    public R update(@RequestBody ArticlesVo vo){
-		return articlesService.updateArticles(vo);
+    public R update(@RequestBody ArticlesVo vo) {
+        return articlesService.updateArticles(vo);
     }
 
     /**
      * 删除
      */
     @RequestMapping("/batch")
-    public R delete(@RequestParam(value = "articleIds") Long[] articleIds){
-		articlesService.removeByIds(Arrays.asList(articleIds));
+    public R delete(@RequestParam(value = "articleIds") Long[] articleIds) {
+        articlesService.removeByIds(Arrays.asList(articleIds));
         return R.ok();
     }
 }

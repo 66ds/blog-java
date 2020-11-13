@@ -47,27 +47,28 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
+        queryWrapper.eq("user_id",params.get("userId"));
         //设置排序字段
-        params.put(Constant.ORDER_FIELD,"article_date");
+        params.put(Constant.ORDER_FIELD, "article_date");
         //设置升序
-        params.put(Constant.ORDER,"asc");
+        params.put(Constant.ORDER, "asc");
         //设置其他搜索参数
         String support = (String) params.get("support");
-        if(!StringUtils.isEmpty(support)){
-            queryWrapper.eq("article_up ",support);
+        if (!StringUtils.isEmpty(support)) {
+            queryWrapper.eq("article_up ", support);
         }
         String type = (String) params.get("type");
-        if(!StringUtils.isEmpty(type)){
-            queryWrapper.eq("article_type",type);
+        if (!StringUtils.isEmpty(type)) {
+            queryWrapper.eq("article_type", type);
         }
         String up = (String) params.get("up");
-        if(!StringUtils.isEmpty(up)){
-            queryWrapper.eq("article_up",up);
+        if (!StringUtils.isEmpty(up)) {
+            queryWrapper.eq("article_up", up);
         }
         String name = (String) params.get("name");
-        if(!StringUtils.isEmpty(name)){
-            queryWrapper.and((obj)->{
-                obj.like("article_title",name).or().like("article_content_origin",name);
+        if (!StringUtils.isEmpty(name)) {
+            queryWrapper.and((obj) -> {
+                obj.like("article_title", name).or().like("article_content_origin", name);
             });
         }
         IPage<ArticlesEntity> page = this.page(
@@ -84,7 +85,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         //查看当前标题是不是已存在
         QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>().eq("article_title", vo.getArticleTitle());
         ArticlesEntity article = this.baseMapper.selectOne(queryWrapper);
-        if(!StringUtils.isEmpty(article)){
+        if (!StringUtils.isEmpty(article)) {
             return R.error(ArticlesConstrant.ARTICLE_ALEARDY_EXIST);
         }
         vo.setArticleDate(new Date());
@@ -93,7 +94,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         vo.setArticleCommentCount(0L);
         vo.setIsDelete(0);
         ArticlesEntity articlesEntity = new ArticlesEntity();
-        BeanUtils.copyProperties(vo,articlesEntity);
+        BeanUtils.copyProperties(vo, articlesEntity);
         List<LabelsEntity> labelsEntities = vo.getLabelNames().stream().map(item -> {
             LabelsEntity labelsEntity = new LabelsEntity();
             labelsEntity.setLabelName(item);
@@ -113,7 +114,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             return setArtitleLabelEntity;
         }).collect(Collectors.toList());
         boolean saveBatch = setArtitleLabelService.saveBatch(collect);
-        if(!batch || count<1 || !saveBatch){
+        if (!batch || count < 1 || !saveBatch) {
             return R.error(ArticlesConstrant.ARTICLE_SERVER_ERROR);
         }
         return R.ok();
@@ -123,7 +124,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     @Override
     public R updateArticles(ArticlesVo vo) {
         ArticlesEntity articleEnty = this.baseMapper.selectById(vo.getArticleId());
-        BeanUtils.copyProperties(vo,articleEnty);
+        BeanUtils.copyProperties(vo, articleEnty);
         //修改文章
         int i = this.baseMapper.updateById(articleEnty);
         //先查出当前文章对应得标签id
@@ -132,8 +133,8 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         boolean article_id = setArtitleLabelService.remove(new QueryWrapper<SetArtitleLabelEntity>().eq("article_id", articleEnty.getArticleId()));
         //再删除标签
         boolean label_id = true;
-        if(labelIds!=null && labelIds.size()>0){
-              label_id = labelsService.remove(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
+        if (labelIds != null && labelIds.size() > 0) {
+            label_id = labelsService.remove(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
         }
         //标签添加
         List<LabelsEntity> labelsEntities = vo.getLabelNames().stream().map(item -> {
@@ -153,7 +154,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         }).collect(Collectors.toList());
         boolean saveBatch = setArtitleLabelService.saveBatch(collect);
         //删除标签和Ids
-        if(i<1 || !article_id || !label_id || !batch || !saveBatch){
+        if (i < 1 || !article_id || !label_id || !batch || !saveBatch) {
             return R.error(ArticlesConstrant.ARTICLE_SERVER_ERROR);
         }
         return R.ok();
@@ -162,9 +163,9 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     @Override
     public R delete(Long articleId) {
         int i = this.baseMapper.deleteById(articleId);
-        if(i<1){
+        if (i < 1) {
             return R.error(ArticlesConstrant.ARTICLE_SERVER_ERROR);
-        }else{
+        } else {
             return R.ok();
         }
     }
@@ -175,11 +176,25 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         ArticlesEntity articlesEntity = this.baseMapper.selectById(articleId);
         //查出文章对应的标签
         List<Long> labelIds = setArtitleLabelService.getLabelIds(articleId);
-        if(labelIds!=null && labelIds.size()>0){
+        if (labelIds != null && labelIds.size() > 0) {
             List<LabelsEntity> labelsEntities = labelsDao.selectList(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
             articlesEntity.setLabelsEntityList(labelsEntities);
         }
         return articlesEntity;
+    }
+
+    @Transactional
+    @Override
+    public R deleteArticle(Long articleId) {
+        //TODO 是否删除标签
+        //删除文章对应的所有标签
+        boolean article_id = setArtitleLabelService.remove(new QueryWrapper<SetArtitleLabelEntity>().eq("article_id", articleId));
+        //删除文章
+        int i = this.baseMapper.deleteById(articleId);
+        if(!article_id || i<1){
+            return R.error(ArticlesConstrant.ARTICLE_SERVER_ERROR);
+        }
+        return R.ok();
     }
 
 }

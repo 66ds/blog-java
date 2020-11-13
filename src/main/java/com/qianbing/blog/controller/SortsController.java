@@ -1,6 +1,7 @@
 package com.qianbing.blog.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.qianbing.blog.entity.SortsEntity;
@@ -14,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-
-
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 
 /**
@@ -36,10 +37,12 @@ public class SortsController {
      */
     @RequestMapping("/list")
     //@RequiresPermissions("${moduleName}:sorts:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestBody Map<String, Object> params,HttpServletRequest request){
+        Integer userId = (Integer) request.getAttribute("id");
+        params.put("userId",userId);
         PageUtils page = sortsService.queryPage(params);
 
-        return R.ok().put("page", page);
+        return R.ok().put("data", page);
     }
 
 
@@ -57,13 +60,14 @@ public class SortsController {
     /**
      * 保存
      */
-    @RequestMapping("/save")
-    //@RequiresPermissions("${moduleName}:sorts:save")
-    public R save(@RequestBody SortsEntity sorts){
-		sortsService.save(sorts);
-
-        return R.ok();
+    @RequestMapping("/add")
+    public R save(@RequestBody SortsEntity sorts,HttpServletRequest request){
+        Integer id = (Integer) request.getAttribute("id");
+        sorts.setUserId(id.longValue());
+		return sortsService.saveSort(sorts);
     }
+
+
 
     /**
      * 修改
@@ -85,6 +89,16 @@ public class SortsController {
 		sortsService.removeByIds(Arrays.asList(sortIds));
 
         return R.ok();
+    }
+
+    /**
+     * 查找该用户下所有的分类
+     */
+    @RequestMapping("/catagorys")
+    public R findCatagorysByUserId(HttpServletRequest request){
+        Integer id = (Integer) request.getAttribute("id");
+        List<SortsEntity> list = sortsService.findCatagorysByUserId(id);
+        return R.ok().setData(list);
     }
 
 }
