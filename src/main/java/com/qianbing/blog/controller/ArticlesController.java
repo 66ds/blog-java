@@ -75,7 +75,6 @@ public class ArticlesController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("${moduleName}:articles:update")
     public R update(@RequestBody ArticlesVo vo) {
         return articlesService.updateArticles(vo);
     }

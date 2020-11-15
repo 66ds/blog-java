@@ -1,6 +1,6 @@
 package com.qianbing.blog.service.impl;
 
-import com.qianbing.blog.constrant.SortConstrant;
+import com.qianbing.blog.constrant.SortsConstrant;
 import com.qianbing.blog.dao.SortsDao;
 import com.qianbing.blog.entity.SortsEntity;
 import com.qianbing.blog.service.SortsService;
@@ -11,6 +11,7 @@ import com.qianbing.blog.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -78,15 +79,45 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
         queryWrapper.eq("sort_name",sorts.getSortName());
         SortsEntity sortsEntity = this.baseMapper.selectOne(queryWrapper);
         if(!StringUtils.isEmpty(sortsEntity)){
-            return R.error(SortConstrant.SORT_AREADY_EXIST);
+            return R.error(SortsConstrant.SORT_AREADY_EXIST);
         }
         int insert = this.baseMapper.insert(sorts);
         if(insert<1){
-            return R.error(SortConstrant.SORT_SERVER_ERROR);
+            return R.error(SortsConstrant.SORT_SERVER_ERROR);
         }
         return R.ok();
     }
 
+    @Override
+    public R updateSorts(SortsEntity sorts) {
+        QueryWrapper<SortsEntity> queryWrapper = new QueryWrapper<SortsEntity>();
+        queryWrapper.eq("sort_name", sorts.getSortName());
+        queryWrapper.and((obj) -> {
+            obj.ne("sort_id", sorts.getSortId());
+        });
+        SortsEntity sortEntity = this.baseMapper.selectOne(queryWrapper);
+        if(!StringUtils.isEmpty(sortEntity)){
+            return R.error(SortsConstrant.SORT_AREADY_EXIST);
+        }
+        sorts.setSortTime(new Date());
+        int insert = this.baseMapper.updateById(sorts);
+        if(insert<1){
+            return R.error(SortsConstrant.SORT_SERVER_ERROR);
+        }
+        return R.ok();
+    }
+
+    @Override
+    public R deleteSorts(Long sortId,Integer userId) {
+        //根据sortId先查询
+        SortsEntity sortsEntity = this.baseMapper.selectById(sortId);
+        //查询该用户的所有分类
+        List<SortsEntity> sortsEntities = this.baseMapper.selectList(new QueryWrapper<SortsEntity>().eq("user_id", userId));
+        getChildrenTree(sortsEntity,sortsEntities);
+        return null;
+    }
+
+    //根据普通用户和管理员来实现权限的管理,当未登录时显示最火的10条博客
     private List<SortsEntity> getChildrenTree(SortsEntity sortsEntity, List<SortsEntity> sortsEntities) {
         List<SortsEntity> list = sortsEntities.stream().filter(sortsEntity1 ->
                 sortsEntity1.getParentSortId() == sortsEntity.getSortId()

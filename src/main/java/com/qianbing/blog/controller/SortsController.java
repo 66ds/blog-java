@@ -54,7 +54,7 @@ public class SortsController {
     public R info(@PathVariable("sortId") Long sortId){
 		SortsEntity sorts = sortsService.getById(sortId);
 
-        return R.ok().put("sorts", sorts);
+        return R.ok().put("data", sorts);
     }
 
     /**
@@ -73,22 +73,18 @@ public class SortsController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("${moduleName}:sorts:update")
     public R update(@RequestBody SortsEntity sorts){
-		sortsService.updateById(sorts);
-
-        return R.ok();
+		return sortsService.updateSorts(sorts);
     }
 
     /**
      * 删除
      */
-    @RequestMapping("/delete")
+    @RequestMapping("/delete/{sortId}")
     //@RequiresPermissions("${moduleName}:sorts:delete")
-    public R delete(@RequestBody Long[] sortIds){
-		sortsService.removeByIds(Arrays.asList(sortIds));
-
-        return R.ok();
+    public R delete(@PathVariable("sortId") Long sortId,HttpServletRequest request){
+        Integer userId = (Integer) request.getAttribute("id");
+        return sortsService.deleteSorts(sortId,userId);
     }
 
     /**
