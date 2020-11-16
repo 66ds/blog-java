@@ -25,13 +25,13 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/api/v1/pri/articles")
-public class ArticlesController {
+public class ArticlesPriController {
 
     @Autowired
     private ArticlesService articlesService;
 
     /**
-     * 列表
+     * 列表(已登录)
      */
     @RequestMapping("/list")
     public R list(@RequestBody Map<String, Object> params,HttpServletRequest request) {

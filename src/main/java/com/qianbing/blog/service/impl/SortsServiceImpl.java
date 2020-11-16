@@ -11,10 +11,7 @@ import com.qianbing.blog.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -113,8 +110,17 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
         SortsEntity sortsEntity = this.baseMapper.selectById(sortId);
         //查询该用户的所有分类
         List<SortsEntity> sortsEntities = this.baseMapper.selectList(new QueryWrapper<SortsEntity>().eq("user_id", userId));
-        getChildrenTree(sortsEntity,sortsEntities);
-        return null;
+        List<Long> longs = new ArrayList<>();
+        List<SortsEntity> childrenTree = getChildrenTree(sortsEntity, sortsEntities);
+        List<Long> sortIdsTree = getSortIdsTree(longs, childrenTree);
+        //把自己的分类id加上去
+        sortIdsTree.add(sortsEntity.getSortId());
+        //删除所有分类id
+        int i = this.baseMapper.deleteBatchIds(sortIdsTree);
+        if(i<1){
+            return R.error(SortsConstrant.SORT_SERVER_ERROR);
+        }
+        return R.ok();
     }
 
     //根据普通用户和管理员来实现权限的管理,当未登录时显示最火的10条博客
@@ -127,6 +133,17 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
         }).sorted((men1, men2) ->
                 (int) (men1.getSortTime().getTime() - men2.getSortTime().getTime())
         ).collect(Collectors.toList());
+        return list;
+    }
+
+    //获取所有的下级Id包括自己
+    private List<Long> getSortIdsTree(List<Long> list,List<SortsEntity> sortsEntities){
+        sortsEntities.stream().forEach(item->{
+            list.add(item.getSortId());
+            if(item.getChildren() != null){
+                getSortIdsTree(list,item.getChildren());
+            }
+        });
         return list;
     }
 

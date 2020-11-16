@@ -18,6 +18,7 @@
         <result property="articleUp" column="article_up"/>
         <result property="articleSupport" column="article_support"/>
         <result property="isDelete" column="is_delete"/>
+        <result property="articleIntroduce" column="article_introduce"/>
     </resultMap>
 
 

@@ -46,6 +46,8 @@ public class ArticlesEntity implements Serializable {
 
 	private Integer articleType;
 
+	private String articleIntroduce;
+
 	private Integer articleUp;
 
 	private Integer articleSupport;

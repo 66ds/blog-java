@@ -47,11 +47,14 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
-        queryWrapper.eq("user_id",params.get("userId"));
         //设置排序字段
         params.put(Constant.ORDER_FIELD, "article_date");
         //设置升序
-        params.put(Constant.ORDER, "asc");
+        params.put(Constant.ORDER, "desc");
+        Object userId = params.get("userId");
+        if(!StringUtils.isEmpty(userId)){
+            queryWrapper.eq("user_id",params.get("userId"));
+        }
         //设置其他搜索参数
         String support = (String) params.get("support");
         if (!StringUtils.isEmpty(support)) {
@@ -75,7 +78,16 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
                 new Query<ArticlesEntity>().getPage(params),
                 queryWrapper
         );
-
+        List<ArticlesEntity> records = page.getRecords();
+        List<ArticlesEntity> articlesEntities = records.stream().map(item -> {
+            //根据id查出所有的标签
+            List<Long> labelIds = setArtitleLabelService.getLabelIds(item.getArticleId());
+            List<LabelsEntity> labelsEntities = labelsDao.selectList(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
+            item.setLabelsEntityList(labelsEntities);
+            //TODO 添加分类
+            return item;
+        }).collect(Collectors.toList());
+         page.setRecords(articlesEntities);
         return new PageUtils(page);
     }
 
@@ -125,6 +137,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     public R updateArticles(ArticlesVo vo) {
         ArticlesEntity articleEnty = this.baseMapper.selectById(vo.getArticleId());
         BeanUtils.copyProperties(vo, articleEnty);
+        articleEnty.setArticleDate(new Date());
         //修改文章
         int i = this.baseMapper.updateById(articleEnty);
         //先查出当前文章对应得标签id

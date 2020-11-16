@@ -34,5 +34,7 @@ public class ArticlesVo  {
 
     private Integer isDelete;
 
+    private String articleIntroduce;
+
     private List<String> labelNames;
 }
