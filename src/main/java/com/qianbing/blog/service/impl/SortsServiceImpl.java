@@ -1,7 +1,9 @@
 package com.qianbing.blog.service.impl;
 
 import com.qianbing.blog.constrant.SortsConstrant;
+import com.qianbing.blog.dao.SetArtitleSortDao;
 import com.qianbing.blog.dao.SortsDao;
+import com.qianbing.blog.entity.SetArtitleSortEntity;
 import com.qianbing.blog.entity.SortsEntity;
 import com.qianbing.blog.service.SortsService;
 import com.qianbing.blog.utils.Constant;
@@ -25,6 +27,9 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
 
     @Autowired
     private SortsDao sortsDao;
+
+    @Autowired
+    private SetArtitleSortDao setArtitleSortDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -115,6 +120,11 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
         List<Long> sortIdsTree = getSortIdsTree(longs, childrenTree);
         //把自己的分类id加上去
         sortIdsTree.add(sortsEntity.getSortId());
+        //判断所有的分类id中是不是有文章,如果有则不删除
+        List<SetArtitleSortEntity> entities = setArtitleSortDao.selectList(new QueryWrapper<SetArtitleSortEntity>().in("sort_id", sortIdsTree));
+        if(entities.size()>0){
+            return R.error(SortsConstrant.SORT_ARTICLE_AREADY_EXIST);
+        }
         //删除所有分类id
         int i = this.baseMapper.deleteBatchIds(sortIdsTree);
         if(i<1){

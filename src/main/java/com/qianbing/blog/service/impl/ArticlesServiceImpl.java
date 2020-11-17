@@ -3,9 +3,9 @@ package com.qianbing.blog.service.impl;
 import com.qianbing.blog.constrant.ArticlesConstrant;
 import com.qianbing.blog.dao.ArticlesDao;
 import com.qianbing.blog.dao.LabelsDao;
-import com.qianbing.blog.entity.ArticlesEntity;
-import com.qianbing.blog.entity.LabelsEntity;
-import com.qianbing.blog.entity.SetArtitleLabelEntity;
+import com.qianbing.blog.dao.SetArtitleSortDao;
+import com.qianbing.blog.dao.SortsDao;
+import com.qianbing.blog.entity.*;
 import com.qianbing.blog.service.ArticlesService;
 import com.qianbing.blog.service.LabelsService;
 import com.qianbing.blog.service.SetArtitleLabelService;
@@ -18,10 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -42,6 +39,12 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
 
     @Autowired
     private LabelsDao labelsDao;
+
+    @Autowired
+    private SetArtitleSortDao setArtitleSortDao;
+
+    @Autowired
+    private SortsDao sortsDao;
 
 
     @Override
@@ -126,7 +129,13 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             return setArtitleLabelEntity;
         }).collect(Collectors.toList());
         boolean saveBatch = setArtitleLabelService.saveBatch(collect);
-        if (!batch || count < 1 || !saveBatch) {
+        //插入文章和分类的关系表
+        List<Long> sortIds = vo.getSortIds();
+        SetArtitleSortEntity setArtitleSortEntity = new SetArtitleSortEntity();
+        setArtitleSortEntity.setArticleId(articlesEntity.getArticleId());
+        setArtitleSortEntity.setSortId(sortIds.get(sortIds.size()-1));
+        int insert = setArtitleSortDao.insert(setArtitleSortEntity);
+        if (!batch || count < 1 || !saveBatch || insert<1) {
             return R.error(ArticlesConstrant.ARTICLE_SERVER_ERROR);
         }
         return R.ok();
@@ -166,6 +175,17 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             return setArtitleLabelEntity;
         }).collect(Collectors.toList());
         boolean saveBatch = setArtitleLabelService.saveBatch(collect);
+        //修改文章的分类
+        SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", articleEnty.getArticleId()));
+        if(StringUtils.isEmpty(setArtitleSortEntity)){
+            SetArtitleSortEntity setArtitleSortEntity1 = new SetArtitleSortEntity();
+            setArtitleSortEntity1.setArticleId(articleEnty.getArticleId());
+            setArtitleSortEntity1.setSortId(vo.getSortIds().get(vo.getSortIds().size()-1));
+            setArtitleSortDao.insert(setArtitleSortEntity1);
+        }else{
+            setArtitleSortEntity.setSortId(vo.getSortIds().get(vo.getSortIds().size()-1));
+            setArtitleSortDao.updateById(setArtitleSortEntity);
+        }
         //删除标签和Ids
         if (i < 1 || !article_id || !label_id || !batch || !saveBatch) {
             return R.error(ArticlesConstrant.ARTICLE_SERVER_ERROR);
@@ -193,7 +213,26 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             List<LabelsEntity> labelsEntities = labelsDao.selectList(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
             articlesEntity.setLabelsEntityList(labelsEntities);
         }
+        //找出文章对应的分类(分类是一个数组)
+        SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", articleId));
+        if(!StringUtils.isEmpty(setArtitleSortEntity)){
+            SortsEntity sortsEntity = sortsDao.selectById(setArtitleSortEntity.getSortId());
+            List<Long> list = new ArrayList<>();
+            list.add(sortsEntity.getSortId());
+            list = parentCatagoryTree(list,sortsEntity.getParentSortId());
+            Collections.reverse(list);
+            articlesEntity.setSortIds(list);
+        }
         return articlesEntity;
+    }
+
+    private List<Long> parentCatagoryTree(List<Long> list,Long parentSortId){
+        if(parentSortId != 0){
+            SortsEntity sortsEntity = sortsDao.selectById(parentSortId);
+            list.add(sortsEntity.getSortId());
+            parentCatagoryTree(list,sortsEntity.getParentSortId());
+        }
+        return list;
     }
 
     @Transactional
@@ -204,7 +243,9 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         boolean article_id = setArtitleLabelService.remove(new QueryWrapper<SetArtitleLabelEntity>().eq("article_id", articleId));
         //删除文章
         int i = this.baseMapper.deleteById(articleId);
-        if(!article_id || i<1){
+        //删除文章对应的分类
+        int delete = setArtitleSortDao.delete(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", articleId));
+        if(!article_id || i<1 || delete<1){
             return R.error(ArticlesConstrant.ARTICLE_SERVER_ERROR);
         }
         return R.ok();
