@@ -36,5 +36,7 @@ public class ArticlesVo  {
 
     private String articleIntroduce;
 
+    private List<Long> sortIds;
+
     private List<String> labelNames;
 }

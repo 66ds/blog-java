@@ -59,4 +59,7 @@ public class ArticlesEntity implements Serializable {
 	@TableField(exist = false)
 	private List<LabelsEntity> labelsEntityList;
 
+	@TableField(exist = false)
+	private List<Long> sortIds;
+
 }
