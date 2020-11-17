@@ -43,15 +43,6 @@ public class ArticlesPriController {
 
 
     /**
-     * 查询单篇文章信息
-     */
-    @RequestMapping("/info/{articleId}")
-    public R info(@PathVariable("articleId") Long articleId) {
-        ArticlesEntity articles = articlesService.findArticleById(articleId);
-        return R.ok().put("data", articles);
-    }
-
-    /**
      * 删除单篇文章
      */
     @RequestMapping("/delete/{articleId}")
