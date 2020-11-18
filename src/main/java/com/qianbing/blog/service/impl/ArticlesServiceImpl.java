@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,7 +51,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     private SortsDao sortsDao;
 
 
-    @Cacheable(value = {"articles"}, key = "#root.methodName",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
+//    @Cacheable(value = {"articles"}, key = "#root.methodName",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
@@ -268,6 +271,54 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             return R.error(ArticlesConstrant.ARTICLE_SERVER_ERROR);
         }
         return R.ok();
+    }
+
+    @Override
+    public Set<String> getTimeList(String userId) {
+        QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
+        if(userId != null){
+            queryWrapper.eq("user_id",userId);
+        }
+        List<ArticlesEntity> articlesEntities = this.baseMapper.selectList(queryWrapper);
+        Set<String> collect = articlesEntities.stream().map(item -> {
+            SimpleDateFormat ft = new SimpleDateFormat ("yyyy-MM-dd");
+            String format = ft.format(item.getArticleDate());
+            return format;
+        }).collect(Collectors.toSet());
+        return collect;
+    }
+
+    @Override
+    public PageUtils selectListByTime(Map<String, Object> params, String time) {
+        QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
+        queryWrapper.eq("article_date",time);
+        //设置排序字段
+        params.put(Constant.ORDER_FIELD, "article_date");
+        //设置升序
+        params.put(Constant.ORDER, "desc");
+        Object userId = params.get("userId");
+        if(!StringUtils.isEmpty(userId)){
+            queryWrapper.eq("user_id",params.get("userId"));
+        }
+        IPage<ArticlesEntity> page = this.page(
+                new Query<ArticlesEntity>().getPage(params),
+                queryWrapper
+        );
+        List<ArticlesEntity> records = page.getRecords();
+        List<ArticlesEntity> articlesEntities = records.stream().map(item -> {
+            //根据id查出所有的标签
+            List<Long> labelIds = setArtitleLabelService.getLabelIds(item.getArticleId());
+            List<LabelsEntity> labelsEntities = labelsDao.selectList(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
+            item.setLabelsEntityList(labelsEntities);
+            //添加分类名称
+            SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", item.getArticleId()));
+            SortsEntity sortsEntity = sortsDao.selectById(setArtitleSortEntity.getSortId());
+            item.setSortName(sortsEntity.getSortName());
+            return item;
+        }).collect(Collectors.toList());
+        page.setRecords(articlesEntities);
+        return new PageUtils(page);
+    }
     }
 
 }

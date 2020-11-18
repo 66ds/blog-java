@@ -1,10 +1,15 @@
 package com.qianbing.blog.service.impl;
 
 import com.qianbing.blog.constrant.SortsConstrant;
+import com.qianbing.blog.dao.LabelsDao;
 import com.qianbing.blog.dao.SetArtitleSortDao;
 import com.qianbing.blog.dao.SortsDao;
+import com.qianbing.blog.entity.ArticlesEntity;
+import com.qianbing.blog.entity.LabelsEntity;
 import com.qianbing.blog.entity.SetArtitleSortEntity;
 import com.qianbing.blog.entity.SortsEntity;
+import com.qianbing.blog.service.ArticlesService;
+import com.qianbing.blog.service.SetArtitleLabelService;
 import com.qianbing.blog.service.SortsService;
 import com.qianbing.blog.utils.Constant;
 import com.qianbing.blog.utils.PageUtils;
@@ -30,6 +35,15 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
 
     @Autowired
     private SetArtitleSortDao setArtitleSortDao;
+
+    @Autowired
+    private ArticlesService articlesService;
+
+    @Autowired
+    private SetArtitleLabelService setArtitleLabelService;
+
+    @Autowired
+    private LabelsDao labelsDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -135,6 +149,62 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
             return R.error(SortsConstrant.SORT_SERVER_ERROR);
         }
         return R.ok();
+    }
+
+    @Override
+    public List<SortsEntity> selectList() {
+        List<SortsEntity> sortsEntities = this.baseMapper.selectList(new QueryWrapper<SortsEntity>());
+        List<Long> sortIds = sortsEntities.stream().map(item -> {
+            return item.getParentSortId();
+        }).collect(Collectors.toList());
+        List<SortsEntity> collect = sortsEntities.stream().filter(item -> {
+            return !sortIds.contains(item.getSortId());
+        }).collect(Collectors.toList());
+        return collect;
+    }
+
+    @Override
+    public PageUtils selectlistBySortId(Long sortId,Map<String,Object> params) {
+        //先根据sortId查询对应得文章
+        QueryWrapper<SetArtitleSortEntity> wrapper = new QueryWrapper<SetArtitleSortEntity>();
+        wrapper.eq("sort_id", sortId);
+        List<SetArtitleSortEntity> setArtitleSortEntities = setArtitleSortDao.selectList(wrapper);
+        //没有文章
+        if(setArtitleSortEntities.size() == 0 || setArtitleSortEntities == null){
+            return null;
+        }
+        List<Long> articleIds = setArtitleSortEntities.stream().map(item -> {
+            return item.getArticleId();
+        }).collect(Collectors.toList());
+        QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
+        queryWrapper.in("article_id",articleIds);
+        //设置排序字段
+        params.put(Constant.ORDER_FIELD, "article_date");
+        //设置升序
+        params.put(Constant.ORDER, "desc");
+        //设置是全部还是私有
+        Object userId = params.get("userId");
+        if(!StringUtils.isEmpty(userId)){
+            queryWrapper.eq("user_id",params.get("userId"));
+        }
+        IPage<ArticlesEntity> page = articlesService.page(
+                new Query<ArticlesEntity>().getPage(params),
+                queryWrapper
+        );
+        List<ArticlesEntity> records = page.getRecords();
+        List<ArticlesEntity> articlesEntities = records.stream().map(item -> {
+            //根据id查出所有的标签
+            List<Long> labelIds = setArtitleLabelService.getLabelIds(item.getArticleId());
+            List<LabelsEntity> labelsEntities = labelsDao.selectList(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
+            item.setLabelsEntityList(labelsEntities);
+            //添加分类名称
+            SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", item.getArticleId()));
+            SortsEntity sortsEntity = sortsDao.selectById(setArtitleSortEntity.getSortId());
+            item.setSortName(sortsEntity.getSortName());
+            return item;
+        }).collect(Collectors.toList());
+        page.setRecords(articlesEntities);
+        return new PageUtils(page);
     }
 
     //根据普通用户和管理员来实现权限的管理,当未登录时显示最火的10条博客

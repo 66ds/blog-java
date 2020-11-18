@@ -25,5 +25,9 @@ public interface SortsService extends IService<SortsEntity> {
     R updateSorts(SortsEntity sorts);
 
     R deleteSorts(Long sortId,Integer userId);
+
+    List<SortsEntity> selectList();
+
+    PageUtils selectlistBySortId(Long sortId,Map<String,Object> map);
 }
 

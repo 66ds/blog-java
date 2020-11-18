@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author qianbing
@@ -42,4 +44,23 @@ public class ArticlesPubController {
         ArticlesEntity articles = articlesService.findArticleById(articleId);
         return R.ok().put("data", articles);
     }
+
+    /**
+     * 查询所有文章的时间信息
+     */
+    @RequestMapping("/timeList")
+    public R getTimeList() {
+        Set<String> set = articlesService.getTimeList(null);
+        return R.ok().put("data", set);
+    }
+
+    /**
+     * 查询时间对应得文章
+     */
+    @RequestMapping("/list/{time}")
+    public R selectListByTime(@RequestBody Map<String, Object> params,@PathVariable("time") String time) {
+        PageUtils page = articlesService.selectListByTime(params,time);
+        return R.ok().put("data", page);
+    }
+
 }

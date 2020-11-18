@@ -6,7 +6,9 @@ import com.qianbing.blog.utils.R;
 import com.qianbing.blog.vo.ArticlesVo;
 
 
+import java.util.Date;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 
@@ -28,5 +30,9 @@ public interface ArticlesService extends IService<ArticlesEntity> {
     ArticlesEntity findArticleById(Long articleId);
 
     R deleteArticle(Long articleId);
+
+    Set<String> getTimeList(String userId);
+
+    PageUtils selectListByTime(Map<String, Object> params, String time);
 }
 
