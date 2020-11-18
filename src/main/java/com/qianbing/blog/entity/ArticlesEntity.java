@@ -62,4 +62,7 @@ public class ArticlesEntity implements Serializable {
 	@TableField(exist = false)
 	private List<Long> sortIds;
 
+	@TableField(exist = false)
+	private String sortName;
+
 }

@@ -16,6 +16,7 @@ import com.qianbing.blog.utils.R;
 import com.qianbing.blog.vo.ArticlesVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -47,6 +48,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     private SortsDao sortsDao;
 
 
+    @Cacheable(value = {"articles"}, key = "#root.methodName",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
@@ -87,7 +89,10 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             List<Long> labelIds = setArtitleLabelService.getLabelIds(item.getArticleId());
             List<LabelsEntity> labelsEntities = labelsDao.selectList(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
             item.setLabelsEntityList(labelsEntities);
-            //TODO 添加分类
+            //添加分类名称
+            SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", item.getArticleId()));
+            SortsEntity sortsEntity = sortsDao.selectById(setArtitleSortEntity.getSortId());
+            item.setSortName(sortsEntity.getSortName());
             return item;
         }).collect(Collectors.toList());
          page.setRecords(articlesEntities);
@@ -203,10 +208,20 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         }
     }
 
+
+    //每一个需要缓存的数据都要指定放在哪个名字的缓存【缓存的分区,按照业务类型分】
+    //默认行为自动生成SimpleKey:[]自动生成的key值
+    //缓存的值默认使用jdk序列机制,序列化后保存到redis
+    //默认过期时间为永不过期
+    @Cacheable(value = {"articles"}, key = "#root.methodName+'::'+#articleId",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
     @Override
     public ArticlesEntity findArticleById(Long articleId) {
         //根据id查出当前文章
         ArticlesEntity articlesEntity = this.baseMapper.selectById(articleId);
+        //更新当前文章的阅读量
+        articlesEntity.setArticleViews(articlesEntity.getArticleViews()+1);
+        //更新阅读量
+        this.baseMapper.updateById(articlesEntity);
         //查出文章对应的标签
         List<Long> labelIds = setArtitleLabelService.getLabelIds(articleId);
         if (labelIds != null && labelIds.size() > 0) {
@@ -216,12 +231,16 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         //找出文章对应的分类(分类是一个数组)
         SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", articleId));
         if(!StringUtils.isEmpty(setArtitleSortEntity)){
-            SortsEntity sortsEntity = sortsDao.selectById(setArtitleSortEntity.getSortId());
+            Long sortId = setArtitleSortEntity.getSortId();
+            SortsEntity sortsEntity = sortsDao.selectById(sortId);
             List<Long> list = new ArrayList<>();
             list.add(sortsEntity.getSortId());
             list = parentCatagoryTree(list,sortsEntity.getParentSortId());
             Collections.reverse(list);
             articlesEntity.setSortIds(list);
+            //查询出当前分类的名字
+            SortsEntity entity = sortsDao.selectById(sortId);
+            articlesEntity.setSortName(entity.getSortName());
         }
         return articlesEntity;
     }

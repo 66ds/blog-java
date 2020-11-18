@@ -62,7 +62,11 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
 
     @Override
     public List<SortsEntity> findCatagorysByUserId(Integer userId) {
-        List<SortsEntity> sortsEntities = sortsDao.selectList(new QueryWrapper<SortsEntity>().eq("user_id", userId));
+        QueryWrapper<SortsEntity> queryWrapper = new QueryWrapper<SortsEntity>();
+        if(userId != null){
+            queryWrapper.eq("user_id", userId);
+        }
+        List<SortsEntity> sortsEntities = sortsDao.selectList(queryWrapper);
         List<SortsEntity> list = sortsEntities.stream().filter(sortsEntity ->
                 sortsEntity.getParentSortId() == 0
         ).map(menu -> {
