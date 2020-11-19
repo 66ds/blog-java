@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @Controller
 @RequestMapping("/api/v1/pub/")
-public class LoginController {
+public class LoginPubController {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
@@ -110,4 +110,7 @@ public class LoginController {
         }
         return usersService.login(vo);
     }
+
+
+
 }

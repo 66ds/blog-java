@@ -25,5 +25,7 @@ public interface UsersService extends IService<UsersEntity> {
     R register(RegisterVo registerVo, HttpServletRequest httpServletRequest);
 
     R login(LoginVo vo);
+
+    R getUserInfoById(Integer userId);
 }
 

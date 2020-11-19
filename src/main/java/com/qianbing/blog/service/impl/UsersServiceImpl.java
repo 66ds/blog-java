@@ -88,6 +88,12 @@ public class UsersServiceImpl extends ServiceImpl<UsersDao, UsersEntity> impleme
         }
     }
 
+    @Override
+    public R getUserInfoById(Integer userId) {
+        UsersEntity usersEntity = this.baseMapper.selectById(userId);
+        return R.ok().setData(usersEntity);
+    }
+
     private void checkPhone(String phone) {
         Integer count = this.baseMapper.selectCount(new QueryWrapper<UsersEntity>().eq("user_telephone_number", phone));
         if(count>0){

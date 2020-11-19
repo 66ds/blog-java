@@ -291,11 +291,11 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     @Override
     public PageUtils selectListByTime(Map<String, Object> params, String time) {
         QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
-        queryWrapper.eq("article_date",time);
+        queryWrapper.like("article_date",time);
         //设置排序字段
         params.put(Constant.ORDER_FIELD, "article_date");
         //设置升序
-        params.put(Constant.ORDER, "desc");
+        params.put(Constant.ORDER, "asc");
         Object userId = params.get("userId");
         if(!StringUtils.isEmpty(userId)){
             queryWrapper.eq("user_id",params.get("userId"));
@@ -318,7 +318,6 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         }).collect(Collectors.toList());
         page.setRecords(articlesEntities);
         return new PageUtils(page);
-    }
     }
 
 }
