@@ -216,7 +216,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
     //默认行为自动生成SimpleKey:[]自动生成的key值
     //缓存的值默认使用jdk序列机制,序列化后保存到redis
     //默认过期时间为永不过期
-    @Cacheable(value = {"articles"}, key = "#root.methodName+'::'+#articleId",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
+//    @Cacheable(value = {"articles"}, key = "#root.methodName+'::'+#articleId",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
     @Override
     public ArticlesEntity findArticleById(Long articleId) {
         //根据id查出当前文章

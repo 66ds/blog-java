@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.concurrent.TimeUnit;
 
 @Controller
-@RequestMapping("/api/v1/pri/")
+@RequestMapping("/api/v1/pri/user")
 public class LoginPriController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class LoginPriController {
      * @param request
      * @return
      */
-    @PostMapping("/user/info")
+    @PostMapping("/info")
     @ResponseBody
     public R getUserInfoById(HttpServletRequest request){
         Integer userId = (Integer) request.getAttribute("id");
