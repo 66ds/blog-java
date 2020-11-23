@@ -48,7 +48,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
                 menu.setChildren(getChildrenTree(menu, commentsEntities));
                 return menu;
             }).sorted((men1, men2) ->
-                    (int) (men1.getCommentDate().getTime() - men2.getCommentDate().getTime())
+                    (int) (men2.getCommentDate().getTime() - men1.getCommentDate().getTime())
             ).collect(Collectors.toList());
             return collect;
         }
@@ -75,7 +75,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
             menu.setChildren(getChildrenTree(menu, commentsEntities));
             return menu;
         }).sorted((men1, men2) ->
-                (int) (men1.getCommentDate().getTime() - men2.getCommentDate().getTime())
+                (int) (men2.getCommentDate().getTime() - men1.getCommentDate().getTime())
         ).collect(Collectors.toList());
         return list;
     }

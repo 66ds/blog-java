@@ -44,7 +44,6 @@ public class CommentsEntity implements Serializable {
 
 	private String commentChrome;
 
-	@JsonInclude(JsonInclude.Include.NON_EMPTY)
 	@TableField(exist = false)
 	private List<CommentsEntity> children;
 
