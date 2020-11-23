@@ -4,7 +4,7 @@ public enum BizCodeExcetionEnum {
     SMS_SEND_MORE_EXCEPTION(10003,"操作频繁,请稍后再试"),
     USER_NAME_EXIST_EXCEPTION(10004,"用户名已存在"),
     SMS_SEND_EXCEPTION(10007,"发送验证码异常请联系管理员"),
-    LOGIN_TIME_ERROR(10008,"登录过期,请重新登录");
+    LOGIN_TIME_ERROR(10008,"请先登录");
     private int code;
 
     private String msg;

@@ -231,6 +231,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             List<LabelsEntity> labelsEntities = labelsDao.selectList(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
             articlesEntity.setLabelsEntityList(labelsEntities);
         }
+
         //找出文章对应的分类(分类是一个数组)
         SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", articleId));
         if(!StringUtils.isEmpty(setArtitleSortEntity)){
