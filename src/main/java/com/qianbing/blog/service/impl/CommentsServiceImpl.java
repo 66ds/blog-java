@@ -1,12 +1,15 @@
 package com.qianbing.blog.service.impl;
 
 import com.qianbing.blog.constrant.CommentsConstrant;
+import com.qianbing.blog.dao.ArticlesDao;
 import com.qianbing.blog.dao.CommentsDao;
 import com.qianbing.blog.dao.UsersDao;
+import com.qianbing.blog.entity.ArticlesEntity;
 import com.qianbing.blog.entity.CommentsEntity;
 import com.qianbing.blog.entity.SortsEntity;
 import com.qianbing.blog.entity.UsersEntity;
 import com.qianbing.blog.service.CommentsService;
+import com.qianbing.blog.utils.Constant;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.Query;
 import com.qianbing.blog.utils.R;
@@ -22,7 +25,7 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service("commentsService")
@@ -30,6 +33,9 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
 
     @Autowired
     private UsersDao usersDao;
+
+    @Autowired
+    private ArticlesDao articlesDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -46,6 +52,10 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
         //根据id查询出文章下的所有评论
         QueryWrapper<CommentsEntity> queryWrapper = new QueryWrapper<CommentsEntity>();
         queryWrapper.eq("article_id", articleId);
+        //设置排序字段
+        params.put(Constant.ORDER_FIELD, "comment_date");
+        //设置升序
+        params.put(Constant.ORDER, "desc");
         IPage<CommentsEntity> page = this.page(
                 new Query<CommentsEntity>().getPage(params),
                 queryWrapper
@@ -69,12 +79,17 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
         return  new PageUtils(page);
     }
 
+    @Transactional
     @Override
     public R addComments(CommentsEntity comments) {
         comments.setCommentDate(new Date());
         comments.setCommentLikeCount(0L);
+        //添加评论并且文章的评论数加1
         int insert = this.baseMapper.insert(comments);
-        if(insert < 1){
+        ArticlesEntity articlesEntity = articlesDao.selectById(comments.getArticleId());
+        articlesEntity.setArticleCommentCount(articlesEntity.getArticleCommentCount()+1);
+        int number = articlesDao.updateById(articlesEntity);
+        if(insert < 1 || number < 1){
             return R.error(CommentsConstrant.COMMENTS_SERVER_ERROR);
         }
         return R.ok();
