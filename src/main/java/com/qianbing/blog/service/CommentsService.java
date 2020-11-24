@@ -1,6 +1,7 @@
 package com.qianbing.blog.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.qianbing.blog.entity.UsersEntity;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.entity.CommentsEntity;
 import com.qianbing.blog.utils.R;
@@ -19,8 +20,10 @@ public interface CommentsService extends IService<CommentsEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    List<CommentsEntity> selectListInfo(Long articleId);
+    PageUtils selectListInfo(Long articleId,Map<String, Object> params);
 
     R addComments(CommentsEntity comments);
+
+    UsersEntity selectUserInfo(Long parentCommentId);
 }
 

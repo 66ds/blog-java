@@ -1,6 +1,7 @@
 package com.qianbing.blog.controller;
 
 import com.qianbing.blog.entity.CommentsEntity;
+import com.qianbing.blog.entity.UsersEntity;
 import com.qianbing.blog.service.CommentsService;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
@@ -87,10 +88,19 @@ public class CommentsPubController {
      * @return
      */
     @RequestMapping("/list/{articleId}")
-    public R selectlistInfo(@PathVariable("articleId") Long articleId){
-        List<CommentsEntity> list = commentsService.selectListInfo(articleId);
-        return R.ok().setData(list);
+    public R selectlistInfo(@PathVariable("articleId") Long articleId,@RequestBody Map<String, Object> params){
+        PageUtils list = commentsService.selectListInfo(articleId,params);
+        return R.ok().put("data", list);
     }
 
-
+    /**
+     * 根据父commentId获取用户信息
+     * @param parentCommentId
+     * @return
+     */
+    @RequestMapping("/users/{parentCommentId}")
+    public R selectUserInfo(@PathVariable("parentCommentId") Long parentCommentId){
+      UsersEntity usersEntity = commentsService.selectUserInfo(parentCommentId);
+      return R.ok().setData(usersEntity);
+    }
 }

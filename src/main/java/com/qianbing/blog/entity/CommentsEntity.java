@@ -33,7 +33,7 @@ public class CommentsEntity implements Serializable {
 
 	private Long commentLikeCount;
 
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
 	private Date commentDate;
 
 	private String commentContent;
@@ -47,4 +47,9 @@ public class CommentsEntity implements Serializable {
 	@TableField(exist = false)
 	private List<CommentsEntity> children;
 
+	@TableField(exist = false)
+	private UsersEntity usersEntity;
+
+	@TableField(exist = false)
+	private UsersEntity parentUsersEntity;
 }
