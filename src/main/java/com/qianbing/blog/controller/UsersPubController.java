@@ -1,20 +1,14 @@
 package com.qianbing.blog.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.qianbing.blog.entity.UsersEntity;
 import com.qianbing.blog.service.UsersService;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
@@ -25,8 +19,8 @@ import com.qianbing.blog.utils.R;
  * @date 2020-11-09 09:12:57
  */
 @RestController
-@RequestMapping("/api/v1/pri/users")
-public class UsersController {
+@RequestMapping("/api/v1/pub/users")
+public class UsersPubController {
     @Autowired
     private UsersService usersService;
 
@@ -51,8 +45,7 @@ public class UsersController {
     //@RequiresPermissions("admin:users:info")
     public R info(@PathVariable("userId") Long userId){
 		UsersEntity users = usersService.getById(userId);
-
-        return R.ok().put("users", users);
+        return R.ok().put("data", users);
     }
 
     /**

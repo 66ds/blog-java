@@ -1,10 +1,7 @@
 package com.qianbing.blog.service.impl;
 
 import com.qianbing.blog.constrant.ArticlesConstrant;
-import com.qianbing.blog.dao.ArticlesDao;
-import com.qianbing.blog.dao.LabelsDao;
-import com.qianbing.blog.dao.SetArtitleSortDao;
-import com.qianbing.blog.dao.SortsDao;
+import com.qianbing.blog.dao.*;
 import com.qianbing.blog.entity.*;
 import com.qianbing.blog.service.ArticlesService;
 import com.qianbing.blog.service.LabelsService;
@@ -49,6 +46,9 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
 
     @Autowired
     private SortsDao sortsDao;
+
+    @Autowired
+    private UsersDao usersDao;
 
 
 //    @Cacheable(value = {"articles"}, key = "#root.methodName",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
@@ -96,6 +96,9 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", item.getArticleId()));
             SortsEntity sortsEntity = sortsDao.selectById(setArtitleSortEntity.getSortId());
             item.setSortName(sortsEntity.getSortName());
+            //添加用户昵称
+            UsersEntity usersEntity = usersDao.selectById(item.getUserId());
+            item.setUserNickname(usersEntity.getUserNickname());
             return item;
         }).collect(Collectors.toList());
          page.setRecords(articlesEntities);
@@ -231,7 +234,9 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
             List<LabelsEntity> labelsEntities = labelsDao.selectList(new QueryWrapper<LabelsEntity>().in("label_id", labelIds));
             articlesEntity.setLabelsEntityList(labelsEntities);
         }
-
+        //添加用户昵称
+        UsersEntity usersEntity = usersDao.selectById(articlesEntity.getUserId());
+        articlesEntity.setUserNickname(usersEntity.getUserNickname());
         //找出文章对应的分类(分类是一个数组)
         SetArtitleSortEntity setArtitleSortEntity = setArtitleSortDao.selectOne(new QueryWrapper<SetArtitleSortEntity>().eq("article_id", articleId));
         if(!StringUtils.isEmpty(setArtitleSortEntity)){
