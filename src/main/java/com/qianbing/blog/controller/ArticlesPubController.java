@@ -63,4 +63,15 @@ public class ArticlesPubController {
         return R.ok().put("data", page);
     }
 
+    /**
+     * 查询10条最火文章(没有id传过来就是所有文章)
+     * @return
+     */
+    @RequestMapping("/hot")
+    public R selectHotList(Long userId){
+        PageUtils pageUtils = articlesService.selectHotList(userId);
+        return R.ok().put("data",pageUtils);
+    }
+
+
 }

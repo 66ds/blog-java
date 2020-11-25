@@ -3,6 +3,8 @@ package com.qianbing.blog.service.impl;
 
 import com.qianbing.blog.constrant.SmsContrant;
 import com.qianbing.blog.constrant.UserContrant;
+import com.qianbing.blog.dao.ArticlesDao;
+import com.qianbing.blog.entity.ArticlesEntity;
 import com.qianbing.blog.exception.PhoneExistException;
 import com.qianbing.blog.utils.GetIpAddress;
 import com.qianbing.blog.utils.Query;
@@ -13,12 +15,17 @@ import com.qianbing.blog.service.UsersService;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
 import com.qianbing.blog.utils.jwt.JWTUtils;
+import com.qianbing.blog.vo.CardVo;
 import com.qianbing.blog.vo.LoginVo;
 import com.qianbing.blog.vo.RegisterVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
@@ -30,6 +37,9 @@ public class UsersServiceImpl extends ServiceImpl<UsersDao, UsersEntity> impleme
 
     @Autowired
     private UsersDao usersDao;
+
+    @Autowired
+    private ArticlesDao articlesDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -92,6 +102,22 @@ public class UsersServiceImpl extends ServiceImpl<UsersDao, UsersEntity> impleme
     public R getUserInfoById(Integer userId) {
         UsersEntity usersEntity = this.baseMapper.selectById(userId);
         return R.ok().setData(usersEntity);
+    }
+
+    @Override
+    public R selectCardInfo(Long userId) {
+        //根据用户id查找所有的文章数
+        UsersEntity usersEntity = this.baseMapper.selectById(userId);
+        CardVo cardVo = new CardVo();
+        cardVo.setUserId(usersEntity.getUserId());
+        cardVo.setUserImg(usersEntity.getUserProfilePhoto());
+        cardVo.setUserName(usersEntity.getUserNickname());
+        List<ArticlesEntity> articlesEntities = articlesDao.selectList(new QueryWrapper<ArticlesEntity>().eq("user_id", userId));
+        cardVo.setAllArticlesLikeNumber(articlesEntities.stream().mapToLong(item -> item.getArticleLikeCount()).sum());
+        cardVo.setAllArticlesCommentsNumber(articlesEntities.stream().mapToLong(item -> item.getArticleCommentCount()).sum());
+        cardVo.setAllArticleViewsNumber(articlesEntities.stream().mapToLong(item -> item.getArticleViews()).sum());
+        cardVo.setAllArticlesNumber((long) articlesEntities.size());
+        return R.ok().setData(cardVo);
     }
 
     private void checkPhone(String phone) {

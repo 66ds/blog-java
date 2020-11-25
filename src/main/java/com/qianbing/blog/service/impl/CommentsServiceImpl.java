@@ -52,24 +52,24 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
         //根据id查询出文章下的所有评论
         QueryWrapper<CommentsEntity> queryWrapper = new QueryWrapper<CommentsEntity>();
         queryWrapper.eq("article_id", articleId);
+        queryWrapper.eq("parent_comment_id",0);
         //设置排序字段
         params.put(Constant.ORDER_FIELD, "comment_date");
-        //设置升序
+        //设置降序
         params.put(Constant.ORDER, "desc");
         IPage<CommentsEntity> page = this.page(
                 new Query<CommentsEntity>().getPage(params),
                 queryWrapper
         );
         List<CommentsEntity> commentsEntities = page.getRecords();
+        List<CommentsEntity> commentsEntityList = this.baseMapper.selectList(new QueryWrapper<CommentsEntity>().eq("article_id",articleId));
         if(commentsEntities != null && commentsEntities.size()>0){
-            List<CommentsEntity> collect = commentsEntities.stream().filter(commentsEntity ->
-                    commentsEntity.getParentCommentId() == 0
-            ).map(menu -> {
+            List<CommentsEntity> collect = commentsEntities.stream().map(menu -> {
                 //设置用户的信息
                 Long userId = menu.getUserId();
                 UsersEntity usersEntity = usersDao.selectById(userId);
                 menu.setUsersEntity(usersEntity);
-                menu.setChildren(getChildrenTree(menu, commentsEntities));
+                menu.setChildren(getChildrenTree(menu, commentsEntityList));
                 return menu;
             }).sorted((men1, men2) ->
                     (int) (men2.getCommentDate().getTime() - men1.getCommentDate().getTime())
@@ -104,18 +104,18 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
 
 
     //查找父评论下的子评论
-    private List<CommentsEntity> getChildrenTree(CommentsEntity commentsEntity, List<CommentsEntity> commentsEntities) {
-        List<CommentsEntity> list = commentsEntities.stream().filter(commentsEntity1 ->
+    private List<CommentsEntity> getChildrenTree(CommentsEntity commentsEntity, List<CommentsEntity> commentsEntityList) {
+        List<CommentsEntity> list = commentsEntityList.stream().filter(commentsEntity1 ->
                 commentsEntity1.getParentCommentId() == commentsEntity.getCommentId()
         ).map(menu -> {
             Long userId = menu.getUserId();
             UsersEntity usersEntity = usersDao.selectById(userId);
             menu.setUsersEntity(usersEntity);
             menu.setParentUsersEntity(selectUserInfo(menu.getParentCommentId()));
-            menu.setChildren(getChildrenTree(menu, commentsEntities));
+            menu.setChildren(getChildrenTree(menu, commentsEntityList));
             return menu;
         }).sorted((men1, men2) ->
-                (int) (men2.getCommentDate().getTime() - men1.getCommentDate().getTime())
+                (int) (men1.getCommentDate().getTime() - men2.getCommentDate().getTime())
         ).collect(Collectors.toList());
         return list;
     }

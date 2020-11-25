@@ -81,4 +81,14 @@ public class UsersPubController {
         return R.ok();
     }
 
+    /**
+     * 获取某用户的名片信息
+     * @param userId
+     * @return
+     */
+    @RequestMapping("/card/{userId}")
+    public R selectCardInfo(@PathVariable("userId") Long userId){
+        return usersService.selectCardInfo(userId);
+    }
+
 }

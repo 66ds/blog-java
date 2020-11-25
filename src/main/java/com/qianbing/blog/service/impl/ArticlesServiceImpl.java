@@ -326,4 +326,22 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesDao, ArticlesEntity
         return new PageUtils(page);
     }
 
+    @Override
+    public PageUtils selectHotList(Long userId) {
+        QueryWrapper<ArticlesEntity> queryWrapper = new QueryWrapper<ArticlesEntity>();
+        if(!StringUtils.isEmpty(userId)){
+            queryWrapper.eq("user_id",userId);
+        }
+        Map<String,Object> params = new HashMap<>();
+        //设置排序字段
+        params.put(Constant.ORDER_FIELD, "article_like_count");
+        //设置降序
+        params.put(Constant.ORDER, "desc");
+        IPage<ArticlesEntity> page = this.page(
+                new Query<ArticlesEntity>().getPage(params),
+                queryWrapper
+        );
+        return new PageUtils(page);
+    }
+
 }

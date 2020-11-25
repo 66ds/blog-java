@@ -27,5 +27,7 @@ public interface UsersService extends IService<UsersEntity> {
     R login(LoginVo vo);
 
     R getUserInfoById(Integer userId);
+
+    R selectCardInfo(Long userId);
 }
 

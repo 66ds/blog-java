@@ -34,5 +34,7 @@ public interface ArticlesService extends IService<ArticlesEntity> {
     Set<String> getTimeList(String userId);
 
     PageUtils selectListByTime(Map<String, Object> params, String time);
+
+    PageUtils selectHotList(Long userId);
 }
 
