@@ -5,7 +5,11 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.ToString;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
 
@@ -17,6 +21,7 @@ import javax.validation.constraints.NotBlank;
  * @date 2020-11-09 09:12:57
  */
 @Data
+@ToString
 @TableName("zj_users")
 public class UsersEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -54,6 +59,8 @@ public class UsersEntity implements Serializable {
 	/**
 	 * $column.comments
 	 */
+	@DateTimeFormat(pattern="yyyy-MM-dd")
+	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
 	private Date userBirthday;
 	/**
 	 * $column.comments

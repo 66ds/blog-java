@@ -55,19 +55,18 @@ public class UsersPubController {
     //@RequiresPermissions("admin:users:save")
     public R save(@RequestBody UsersEntity users){
 		usersService.save(users);
-
         return R.ok();
     }
 
     /**
-     * 修改
+     * 修改个人用户信息
+     * @param users
+     * @return
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("admin:users:update")
     public R update(@RequestBody UsersEntity users){
-		usersService.updateById(users);
-
-        return R.ok();
+        usersService.updateById(users);
+        return R.ok().put("data",users);
     }
 
     /**

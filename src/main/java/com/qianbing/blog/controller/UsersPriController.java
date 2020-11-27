@@ -26,7 +26,7 @@ import com.qianbing.blog.utils.R;
  */
 @RestController
 @RequestMapping("/api/v1/pri/users")
-public class UsersController {
+public class UsersPriController {
     @Autowired
     private UsersService usersService;
 
@@ -67,14 +67,14 @@ public class UsersController {
     }
 
     /**
-     * 修改
+     * 修改个人用户信息
+     * @param users
+     * @return
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("admin:users:update")
     public R update(@RequestBody UsersEntity users){
 		usersService.updateById(users);
-
-        return R.ok();
+        return R.ok().put("data",users);
     }
 
     /**

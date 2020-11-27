@@ -73,6 +73,8 @@ public class UsersServiceImpl extends ServiceImpl<UsersDao, UsersEntity> impleme
         //设置冻结
         usersEntity.setUserLock(0);
         usersEntity.setUserFreeze(0);
+        //设置用户默认头像
+        usersEntity.setUserProfilePhoto("http://guliqianbing.oss-cn-beijing.aliyuncs.com/2020/11/27/daa494cd-d334-400b-8d2f-782310566bf6MrQian.jpg");
         //TODO其他默认信息
         this.baseMapper.insert(usersEntity);
         return R.ok();
