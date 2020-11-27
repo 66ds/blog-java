@@ -64,10 +64,10 @@ public class LikeCommentUserServiceImpl extends ServiceImpl<LikeCommentUserDao, 
         CommentsEntity commentsEntity = commentsDao.selectById(commentId);
         LikeCommentUserEntity likeCommentUserEntity = this.baseMapper.selectOne(new QueryWrapper<LikeCommentUserEntity>().eq("comment_id", commentId).eq("user_id", userId));
         if(!StringUtils.isEmpty(likeCommentUserEntity)){
-            this.baseMapper.deleteById(likeCommentUserEntity);
+            int i = this.baseMapper.deleteById(likeCommentUserEntity);
             commentsEntity.setCommentLikeCount(commentsEntity.getCommentLikeCount()-1);
             int num = commentsDao.updateById(commentsEntity);
-            if(num < 1){
+            if(num < 1 || i<1){
                 return R.error(LikeCommentUserConstrant.LIKECOMMENTUSER_SERVER_ERROR);
             }
             return R.ok();
