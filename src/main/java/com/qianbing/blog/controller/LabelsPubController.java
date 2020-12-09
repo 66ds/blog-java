@@ -28,7 +28,7 @@ public class LabelsPubController {
     /**
      * 列表
      */
-    @Cacheable(value = {"labels"}, key = "#root.methodName",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
+//    @Cacheable(value = {"labels"}, key = "#root.methodName",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
     @RequestMapping("/list")
     public R list(){
         List<LabelsEntity> list = labelsService.list();
