@@ -9,6 +9,15 @@ spring:
   redis:
     host: 111.229.248.18
     port: 6379
+  sms:
+    path: /sms/sendv2
+    host: https://zwp.market.alicloudapi.com
+    appcode: a8a650913b25415e81b3ab9d90bb041e
+  oos:
+    endpoint: oss-cn-beijing.aliyuncs.com
+    bucket: guliqianbing
+    access-key: LTAI4G55MZJEnQzKzTFJ29GB
+    secret-key: Uex5Rzm3XEee713EN1ZHVktLifiMDu
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
