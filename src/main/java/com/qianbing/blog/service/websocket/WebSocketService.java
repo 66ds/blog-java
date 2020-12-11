@@ -1,6 +1,7 @@
 package com.qianbing.blog.service.websocket;
 
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -26,6 +27,7 @@ import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -39,21 +41,20 @@ import java.util.concurrent.CopyOnWriteArraySet;
  *  虽然@Component默认是单例模式的，但springboot还是会为每个websocket连接初始化一个bean，
  *  所以可以用一个静态set保存起来
  */
-@ServerEndpoint(value = "/websocket/{receivedId}/{sendId}/{secretId}")
+@ServerEndpoint(value = "/websocket/{receivedId}/{sendId}")
 @Component
 public class WebSocketService {
-    private Integer receivedId;
 
     private Session session;
 
     private static SecretMessageService secretMessageService;
 
-    private static UsersService usersService;
+    private static SecretMessageDao secretMessageDao;
 
     @Autowired
-    public void setSecretMessageService(SecretMessageService secretMessageService,UsersService usersService) {
+    public void setSecretMessageService(SecretMessageService secretMessageService,SecretMessageDao secretMessageDao) {
         WebSocketService.secretMessageService = secretMessageService;
-        WebSocketService.usersService = usersService;
+        WebSocketService.secretMessageDao = secretMessageDao;
     }
 
 
@@ -72,7 +73,6 @@ public class WebSocketService {
         String unique = sendId+","+receivedId;
         Map<String,Object> message=new HashMap<>();
         this.session = session;
-        this.receivedId = receivedId;
         map.put(unique, session);
         webSocketSet.add(this);//加入set中
         message.put("type",0); //消息类型，0-连接成功，1-用户消息
@@ -94,7 +94,7 @@ public class WebSocketService {
      * @param message 客户端发送过来的消息
      */
     @OnMessage
-    public void onMessage(String message,@PathParam("secretId") Integer secretId) {
+    public void onMessage(String message) {
         //从客户端传过来的数据是json数据，所以这里使用jackson进行转换为SocketMsg对象，
         // 然后通过socketMsg的type进行判断是单聊还是群聊，进行相应的处理:
         ObjectMapper objectMapper = new ObjectMapper();
@@ -107,32 +107,24 @@ public class WebSocketService {
             //取相反的唯一标识
             String aisleTwo = split[1]+","+split[0];
             Session toSession = map.get(aisleTwo);
+            //取出发送者或者接收者中最后一条
+            SecretMessageEntity secretMessageEntity1 = secretMessageDao.selectLatestInfo(Integer.parseInt(split[0]), Integer.parseInt(split[1]));
             //不管对方在不在线,都要将数据保存到数据库
             SecretMessageEntity secretMessageEntity = new SecretMessageEntity();
             secretMessageEntity.setSendId((long) Integer.parseInt(split[0]));
             secretMessageEntity.setReceiveId((long) Integer.parseInt(split[1]));
-            secretMessageEntity.setParentSecretId(secretId.longValue());
+            secretMessageEntity.setParentSecretId(secretMessageEntity1.getSecretId());
             secretMessageEntity.setCreateTime(new Date());
             secretMessageEntity.setMessageContent(socketMsg.getMsg());
             secretMessageEntity.setIsRead(0L);
             secretMessageService.save(secretMessageEntity);
-            //发送给接受者.
-            R r = usersService.getUserInfoById(Integer.parseInt(split[0]));
-            R r1 = usersService.getUserInfoById(Integer.parseInt(split[1]));
-            MessagesVo messagesVo = new MessagesVo();
-            BeanUtils.copyProperties(secretMessageEntity,messagesVo);
-            messagesVo.setSendName(r1.getData(new TypeReference<UsersEntity>(){},"data").getUserNickname());
-            messagesVo.setSendImg(r1.getData(new TypeReference<UsersEntity>(){},"data").getUserProfilePhoto());
-            messagesVo.setReceivedName(r.getData(new TypeReference<UsersEntity>(){},"data").getUserNickname());
-            messagesVo.setReceivedImg(r.getData(new TypeReference<UsersEntity>(){},"data").getUserProfilePhoto());
             Map<String,Object> m=new HashMap<>();
             m.put("type",1);
-            m.put("msg",messagesVo);
             //发送给发送者.
-            fromSession.getAsyncRemote().sendText(new Gson().toJson(m));
+            fromSession.getAsyncRemote().sendText(JSON.toJSONString(m));
             if (toSession != null) {
                 //发送给接受者.
-                toSession.getAsyncRemote().sendText(new Gson().toJson(m));
+                toSession.getAsyncRemote().sendText(JSON.toJSONString(m));
             } else {
                 //无需操作
             }

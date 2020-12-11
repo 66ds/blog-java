@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * 
@@ -15,6 +18,7 @@ import lombok.Data;
  * @date 2020-12-09 14:18:27
  */
 @Data
+@ToString
 @TableName("zj_secret_message")
 public class SecretMessageEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -43,6 +47,7 @@ public class SecretMessageEntity implements Serializable {
 	/**
 	 * $column.comments
 	 */
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
 	/**
 	 * $column.comments

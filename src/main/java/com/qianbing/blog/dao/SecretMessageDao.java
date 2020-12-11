@@ -20,4 +20,6 @@ import java.util.List;
 public interface SecretMessageDao extends BaseMapper<SecretMessageEntity> {
 
     List<SecretMessageEntity> selectMessagesList(@Param("sendId") Integer sendId,@Param("receiveId") Integer receiveId);
+
+    SecretMessageEntity selectLatestInfo(@Param("sendId") Integer sendId,@Param("receiveId") Integer receiveId);
 }
