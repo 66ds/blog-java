@@ -3,15 +3,13 @@ package com.qianbing.blog.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.qianbing.blog.constrant.UserAttentionConstrant;
 import com.qianbing.blog.entity.UserAttentionEntity;
 import com.qianbing.blog.service.UserAttentionService;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -57,14 +55,15 @@ public class UserAttentionPriController {
 
     /**
      * 添加用户的关注信息
-     * @param userAttention
+     * @param attentionId
      * @return
      */
-    @RequestMapping("/save")
-    public R save(@RequestBody UserAttentionEntity userAttention, HttpServletRequest request){
+    @RequestMapping("/save/{attentionId}")
+    public R save(@PathVariable("attentionId") Long attentionId, HttpServletRequest request){
         Integer id = (Integer) request.getAttribute("id");
+        UserAttentionEntity userAttention = new UserAttentionEntity();
         userAttention.setUserId(id.longValue());
-        userAttentionService.updateById(userAttention);
+        userAttention.setAttentionId(attentionId);
 		return userAttentionService.saveAttentionInfo(userAttention);
     }
 

@@ -12,5 +12,4 @@ import lombok.Data;
 public class SocketMsgVo {
     private String aisle;//房间号.
     private String msg;//消息
-
 }
