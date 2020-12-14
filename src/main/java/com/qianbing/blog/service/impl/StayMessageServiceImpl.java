@@ -31,8 +31,13 @@ public class StayMessageServiceImpl extends ServiceImpl<StayMessageDao, StayMess
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        String name = (String) params.get("name");
+        String content = (String) params.get("content");
         //查询父留言id为0的所有留言
         QueryWrapper<StayMessageEntity> queryWrapper = new QueryWrapper<StayMessageEntity>();
+        if(!StringUtils.isEmpty(content)){
+            queryWrapper.like("message_content",content);
+        }
         queryWrapper.eq("parent_stay_id",0);
         //设置排序字段
         params.put(Constant.ORDER_FIELD, "message_stay_time");
