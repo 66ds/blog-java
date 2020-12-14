@@ -3,7 +3,9 @@ package com.qianbing.blog.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.qianbing.blog.entity.StayMessageEntity;
 import com.qianbing.blog.utils.PageUtils;
+import com.qianbing.blog.utils.R;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 /**
@@ -16,5 +18,7 @@ import java.util.Map;
 public interface StayMessageService extends IService<StayMessageEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    R addStayMessage(StayMessageEntity stayMessage, HttpServletRequest request);
 }
 

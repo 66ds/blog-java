@@ -1,10 +1,13 @@
 package com.qianbing.blog.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
 import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 /**
@@ -20,29 +23,63 @@ public class StayMessageEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * $column.comments
+	 * 留言Id
 	 */
 	@TableId
 	private Long stayId;
+
 	/**
-	 * $column.comments
+	 * 留言用户Id
 	 */
 	private Long stayUserId;
+
 	/**
-	 * $column.comments
+	 * 留言内容
 	 */
 	private String messageContent;
+
 	/**
-	 * $column.comments
+	 * 留言用户Ip
 	 */
 	private String stayUserIp;
+
 	/**
-	 * $column.comments
+	 * 留言时间
 	 */
-	private Integer messageStayTime;
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+	private Date messageStayTime;
 	/**
-	 * $column.comments
+	 * 父留言ID
 	 */
 	private Long parentStayId;
+
+	/**
+	 * 留言者系统
+	 */
+	private String staySys;
+
+	/**
+	 * 留言着浏览器
+	 */
+	private String stayChrome;
+
+	/**
+	 * 子留言
+	 */
+	@TableField(exist = false)
+	private StayMessageEntity stayMessageEntity;
+
+	/**
+	 * 留言人姓名
+	 */
+	@TableField(exist = false)
+	private String userName;
+
+	/**
+	 * 留言人头像
+	 */
+	@TableField(exist = false)
+	private String userImg;
+
 
 }
