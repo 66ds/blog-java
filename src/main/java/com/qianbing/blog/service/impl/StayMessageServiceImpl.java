@@ -80,4 +80,10 @@ public class StayMessageServiceImpl extends ServiceImpl<StayMessageDao, StayMess
         return R.ok(StayMessageConstrant.STAY_MESSAGE_SUCCESS);
     }
 
+    @Override
+    public StayMessageEntity selectStayInfo(Long stayId) {
+        StayMessageEntity parent_stay_id = this.baseMapper.selectOne(new QueryWrapper<StayMessageEntity>().eq("parent_stay_id", stayId));
+        return parent_stay_id;
+    }
+
 }

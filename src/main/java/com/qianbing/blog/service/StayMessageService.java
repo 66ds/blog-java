@@ -20,5 +20,7 @@ public interface StayMessageService extends IService<StayMessageEntity> {
     PageUtils queryPage(Map<String, Object> params);
 
     R addStayMessage(StayMessageEntity stayMessage, HttpServletRequest request);
+
+    StayMessageEntity selectStayInfo(Long stayId);
 }
 

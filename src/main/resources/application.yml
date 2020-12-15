@@ -20,3 +20,4 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl #开启日志
 server:
   port: 12000
+

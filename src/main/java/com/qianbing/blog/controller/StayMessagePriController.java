@@ -3,6 +3,7 @@ package com.qianbing.blog.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.qianbing.blog.constrant.StayMessageConstrant;
 import com.qianbing.blog.entity.StayMessageEntity;
 import com.qianbing.blog.service.StayMessageService;
 import com.qianbing.blog.utils.PageUtils;
@@ -43,14 +44,15 @@ public class StayMessagePriController {
 
 
     /**
-     * 信息
+     * 查看parentstayId是stayId的留言信息
+     * @param stayId
+     * @return
      */
     @RequestMapping("/info/{stayId}")
     //@RequiresPermissions("coupon:staymessage:info")
     public R info(@PathVariable("stayId") Long stayId){
-		StayMessageEntity stayMessage = stayMessageService.getById(stayId);
-
-        return R.ok().put("stayMessage", stayMessage);
+		StayMessageEntity stayMessage = stayMessageService.selectStayInfo(stayId);
+        return R.ok().put("data", stayMessage);
     }
 
     /**
@@ -74,14 +76,14 @@ public class StayMessagePriController {
     }
 
     /**
-     * 修改
+     * 修改留言内容
+     * @param stayMessage
+     * @return
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("coupon:staymessage:update")
     public R update(@RequestBody StayMessageEntity stayMessage){
 		stayMessageService.updateById(stayMessage);
-
-        return R.ok();
+        return R.ok(StayMessageConstrant.STAY_UPDATE_SUCCESS);
     }
 
     /**
