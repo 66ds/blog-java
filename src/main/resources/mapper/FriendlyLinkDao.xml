@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qianbing.blog.dao.FriendlyLinkDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="com.qianbing.blog.entity.FriendlyLinkEntity" id="friendlyLinkMap">
+        <result property="linkId" column="link_id"/>
+        <result property="linkName" column="link_name"/>
+        <result property="linkUrl" column="link_url"/>
+        <result property="linkEmail" column="link_email"/>
+        <result property="linkDesc" column="link_desc"/>
+        <result property="linkCreateTime" column="link_create_time"/>
+        <result property="linkAllow" column="link_allow"/>
+    </resultMap>
+
+
+</mapper>
