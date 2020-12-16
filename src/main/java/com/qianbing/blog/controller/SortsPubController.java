@@ -29,8 +29,8 @@ public class SortsPubController {
      * 列表(查询所有只有根)
      */
     @RequestMapping("/list")
-    public R list(){
-        List<SortsEntity> list = sortsService.selectList();
+    public R list(Long userId){
+        List<SortsEntity> list = sortsService.selectList(userId);
         return R.ok().put("data", list);
     }
 

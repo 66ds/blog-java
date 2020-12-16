@@ -3,6 +3,7 @@ package com.qianbing.blog.controller;
 import java.util.Arrays;
 import java.util.Map;
 
+import com.qianbing.blog.constrant.ArticlesConstrant;
 import com.qianbing.blog.entity.ArticlesEntity;
 import com.qianbing.blog.service.ArticlesService;
 import com.qianbing.blog.utils.PageUtils;
@@ -71,11 +72,13 @@ public class ArticlesPriController {
     }
 
     /**
-     * 删除
+     * 批量删除文章
+     * @param articleIds
+     * @return
      */
     @RequestMapping("/batch")
     public R delete(@RequestParam(value = "articleIds") Long[] articleIds) {
         articlesService.removeByIds(Arrays.asList(articleIds));
-        return R.ok();
+        return R.ok(ArticlesConstrant.ARTICLE_DELETE_SUCCESS);
     }
 }

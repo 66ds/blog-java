@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.qianbing.blog.entity.LabelsEntity;
 import com.qianbing.blog.utils.PageUtils;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +17,7 @@ import java.util.Map;
 public interface LabelsService extends IService<LabelsEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    List<LabelsEntity> selectListInfo(Long userId);
 }
 

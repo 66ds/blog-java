@@ -7,6 +7,7 @@ import com.qianbing.blog.entity.StayMessageEntity;
 import com.qianbing.blog.entity.UsersEntity;
 import com.qianbing.blog.service.StayMessageService;
 import com.qianbing.blog.utils.*;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -84,6 +86,30 @@ public class StayMessageServiceImpl extends ServiceImpl<StayMessageDao, StayMess
     public StayMessageEntity selectStayInfo(Long stayId) {
         StayMessageEntity parent_stay_id = this.baseMapper.selectOne(new QueryWrapper<StayMessageEntity>().eq("parent_stay_id", stayId));
         return parent_stay_id;
+    }
+
+    @Transactional
+    @Override
+    public R deleteBatchByIds(List<Long> asList) {
+        //如果有管理员留言则一起删除(没有就删除用户留言)
+        int i = this.baseMapper.deleteBatchIds(asList);
+        this.baseMapper.delete(new QueryWrapper<StayMessageEntity>().in("parent_stay_id",asList));
+        if( i < 1 ){
+            return R.error(StayMessageConstrant.STAY_MESSAGE_SERVER_ERROR);
+        }
+        return R.ok(StayMessageConstrant.STAY_DELETE_SUCCESS);
+    }
+
+    @Transactional
+    @Override
+    public R delete(Long stayId) {
+        //如果有管理员留言则一起删除(没有就删除用户留言)
+        int i = this.baseMapper.deleteById(stayId);
+        this.baseMapper.delete(new QueryWrapper<StayMessageEntity>().eq("parent_stay_id",stayId));
+        if( i < 1 ){
+            return R.error(StayMessageConstrant.STAY_MESSAGE_SERVER_ERROR);
+        }
+        return R.ok(StayMessageConstrant.STAY_DELETE_SUCCESS);
     }
 
 }

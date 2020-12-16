@@ -152,8 +152,12 @@ public class SortsServiceImpl extends ServiceImpl<SortsDao, SortsEntity> impleme
     }
 
     @Override
-    public List<SortsEntity> selectList() {
-        List<SortsEntity> sortsEntities = this.baseMapper.selectList(new QueryWrapper<SortsEntity>());
+    public List<SortsEntity> selectList(Long userId) {
+        QueryWrapper<SortsEntity> queryWrapper = new QueryWrapper<>();
+        if(!StringUtils.isEmpty(userId)){
+            queryWrapper.eq("user_id",userId);
+        }
+        List<SortsEntity> sortsEntities = this.baseMapper.selectList(queryWrapper);
         List<Long> sortIds = sortsEntities.stream().map(item -> {
             return item.getParentSortId();
         }).collect(Collectors.toList());

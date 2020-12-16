@@ -49,7 +49,6 @@ public class StayMessagePriController {
      * @return
      */
     @RequestMapping("/info/{stayId}")
-    //@RequiresPermissions("coupon:staymessage:info")
     public R info(@PathVariable("stayId") Long stayId){
 		StayMessageEntity stayMessage = stayMessageService.selectStayInfo(stayId);
         return R.ok().put("data", stayMessage);
@@ -87,14 +86,23 @@ public class StayMessagePriController {
     }
 
     /**
-     * 删除
+     * 批量删除留言
+     * @param stayIds
+     * @return
      */
-    @RequestMapping("/delete")
-    //@RequiresPermissions("coupon:staymessage:delete")
-    public R delete(@RequestBody Long[] stayIds){
-		stayMessageService.removeByIds(Arrays.asList(stayIds));
+    @RequestMapping("/batch")
+    public R deleteBatch(@RequestParam(value = "stayIds") @RequestBody Long[] stayIds){
+		return stayMessageService.deleteBatchByIds(Arrays.asList(stayIds));
+    }
 
-        return R.ok();
+    /**
+     * 单个留言删除
+     * @param stayId
+     * @return
+     */
+    @RequestMapping("/delete/{stayId}")
+    public R delete(@PathVariable("stayId") Long stayId){
+        return stayMessageService.delete(stayId);
     }
 
 }

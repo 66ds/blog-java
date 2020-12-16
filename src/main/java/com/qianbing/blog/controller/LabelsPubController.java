@@ -25,13 +25,16 @@ public class LabelsPubController {
 
     @Autowired
     private LabelsService labelsService;
+
     /**
-     * 列表
+     * 所有标签查询
+     * @param userId
+     * @return
      */
 //    @Cacheable(value = {"labels"}, key = "#root.methodName",sync = true)//代表当前的结果需要缓存,如果缓存中有,方法都不调用,没有就调用方法
     @RequestMapping("/list")
-    public R list(){
-        List<LabelsEntity> list = labelsService.list();
+    public R list(Long userId){
+        List<LabelsEntity> list = labelsService.selectListInfo(userId);
         return R.ok().put("data", list);
     }
 
