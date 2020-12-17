@@ -32,16 +32,26 @@ public class FriendlyLinkPriController {
     @Autowired
     private FriendlyLinkService friendlyLinkService;
 
+    /**
+     * 查询所有的友情链接(包括通过和未通过)
+     * @param params
+     * @return
+     */
+    @RequestMapping("/lists")
+    public R list(@RequestBody Map<String,Object> params){
+        PageUtils pageUtils = friendlyLinkService.queryPage(params);
+        return R.ok().setData(pageUtils);
+    }
 
     /**
-     * 信息
+     * 查询单个友链信息
+     * @param linkId
+     * @return
      */
     @RequestMapping("/info/{linkId}")
-    //@RequiresPermissions("coupon:friendlylink:info")
     public R info(@PathVariable("linkId") Long linkId){
 		FriendlyLinkEntity friendlyLink = friendlyLinkService.getById(linkId);
-
-        return R.ok().put("friendlyLink", friendlyLink);
+        return R.ok().setData(friendlyLink);
     }
 
     /**
@@ -58,25 +68,41 @@ public class FriendlyLinkPriController {
     }
 
     /**
-     * 修改
+     * 修改留言信息
+     * @param friendlyLink
+     * @return
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("coupon:friendlylink:update")
     public R update(@RequestBody FriendlyLinkEntity friendlyLink){
-		friendlyLinkService.updateById(friendlyLink);
-
-        return R.ok();
+       return friendlyLinkService.updateLinkInfo(friendlyLink);
     }
 
     /**
-     * 删除
+     * 单个友链删除
+     * @param linkId
+     * @return
      */
-    @RequestMapping("/delete")
-    //@RequiresPermissions("coupon:friendlylink:delete")
-    public R delete(@RequestBody Long[] linkIds){
-		friendlyLinkService.removeByIds(Arrays.asList(linkIds));
+    @RequestMapping("/delete/{linkId}")
+    public R delete(@PathVariable("linkId") Long linkId){
+        boolean b = friendlyLinkService.removeById(linkId);
+        if(!b){
+            return R.error(FriendLinkConstrant.LINK_SERVER_ERROR);
+        }
+        return R.ok(FriendLinkConstrant.LINK_DELETE_SUCCESS);
+    }
 
-        return R.ok();
+    /**
+     * 批量删除友链
+     * @param linkIds
+     * @return
+     */
+    @RequestMapping("/batch")
+    public R deleteBatch(@RequestParam(value = "linkIds") @RequestBody Long[] linkIds){
+        boolean b = friendlyLinkService.removeByIds(Arrays.asList(linkIds));
+        if(!b){
+            return R.error(FriendLinkConstrant.LINK_SERVER_ERROR);
+        }
+        return R.ok(FriendLinkConstrant.LINK_DELETE_SUCCESS);
     }
 
 }

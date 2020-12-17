@@ -40,16 +40,6 @@ public class FriendlyLinkPubController {
         return R.ok().setData(friendlyLinkEntities);
     }
 
-    /**
-     * 查询所有的友情链接(包括通过和未通过)
-     * @param params
-     * @return
-     */
-    @RequestMapping("/lists")
-    public R list(@RequestBody Map<String,Object> params){
-        PageUtils pageUtils = friendlyLinkService.queryPage(params);
-        return R.ok().setData(pageUtils);
-    }
 
 
     /**
