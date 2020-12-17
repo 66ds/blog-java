@@ -12,6 +12,7 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.springframework.util.StringUtils;
 
 
 @Service("friendlyLinkService")
@@ -19,11 +20,15 @@ public class FriendlyLinkServiceImpl extends ServiceImpl<FriendlyLinkDao, Friend
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        QueryWrapper<FriendlyLinkEntity> queryWrapper = new QueryWrapper<FriendlyLinkEntity>();
+        String content = (String) params.get("content");
+        if(!StringUtils.isEmpty(content)){
+            queryWrapper .and(wrapper -> wrapper.like("link_name",content).or().like("link_desc", content));
+        }
         IPage<FriendlyLinkEntity> page = this.page(
                 new Query<FriendlyLinkEntity>().getPage(params),
-                new QueryWrapper<FriendlyLinkEntity>()
+                queryWrapper
         );
-
         return new PageUtils(page);
     }
 

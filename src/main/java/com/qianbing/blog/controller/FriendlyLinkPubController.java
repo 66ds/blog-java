@@ -3,6 +3,7 @@ package com.qianbing.blog.controller;
 import com.qianbing.blog.constrant.FriendLinkConstrant;
 import com.qianbing.blog.entity.FriendlyLinkEntity;
 import com.qianbing.blog.service.FriendlyLinkService;
+import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -29,13 +31,24 @@ public class FriendlyLinkPubController {
     private FriendlyLinkService friendlyLinkService;
 
     /**
-     * 查询所有友情链接
+     * 查询所有已通过的友情链接
      * @return
      */
     @RequestMapping("/list")
     public R list(){
-        List<FriendlyLinkEntity> list = friendlyLinkService.selectList();
-        return R.ok().setData(list);
+        List<FriendlyLinkEntity> friendlyLinkEntities = friendlyLinkService.selectList();
+        return R.ok().setData(friendlyLinkEntities);
+    }
+
+    /**
+     * 查询所有的友情链接(包括通过和未通过)
+     * @param params
+     * @return
+     */
+    @RequestMapping("/lists")
+    public R list(@RequestBody Map<String,Object> params){
+        PageUtils pageUtils = friendlyLinkService.queryPage(params);
+        return R.ok().setData(pageUtils);
     }
 
 
