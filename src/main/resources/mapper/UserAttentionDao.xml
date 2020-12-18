@@ -8,6 +8,7 @@
         <result property="aId" column="a_id"/>
         <result property="userId" column="user_id"/>
         <result property="attentionId" column="attention_id"/>
+        <result property="isRead" column="is_read"/>
     </resultMap>
 
 

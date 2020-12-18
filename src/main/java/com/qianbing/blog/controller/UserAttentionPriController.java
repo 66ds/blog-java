@@ -64,6 +64,8 @@ public class UserAttentionPriController {
         UserAttentionEntity userAttention = new UserAttentionEntity();
         userAttention.setUserId(id.longValue());
         userAttention.setAttentionId(attentionId);
+        //默认未读
+        userAttention.setIsRead(0L);
 		return userAttentionService.saveAttentionInfo(userAttention);
     }
 

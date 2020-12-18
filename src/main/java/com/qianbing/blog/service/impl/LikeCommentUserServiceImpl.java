@@ -60,7 +60,7 @@ public class LikeCommentUserServiceImpl extends ServiceImpl<LikeCommentUserDao, 
     @Transactional
     @Override
     public R likeComment(Long commentId, Integer userId) {
-        //如果已经点赞则取消,并且将文章的数量减1
+        //如果已经点赞则取消,并且将文章的评论数减1
         CommentsEntity commentsEntity = commentsDao.selectById(commentId);
         LikeCommentUserEntity likeCommentUserEntity = this.baseMapper.selectOne(new QueryWrapper<LikeCommentUserEntity>().eq("comment_id", commentId).eq("user_id", userId));
         if(!StringUtils.isEmpty(likeCommentUserEntity)){
@@ -77,8 +77,10 @@ public class LikeCommentUserServiceImpl extends ServiceImpl<LikeCommentUserDao, 
         entity.setCommentId(commentId);
         entity.setLikeDate(new Date());
         entity.setUserId(userId.longValue());
+        //默认未读
+        entity.setIsRead(0L);
         int insert = this.baseMapper.insert(entity);
-        //修改文章的赞数量+1
+        //修改文章的评论数量+1
         commentsEntity.setCommentLikeCount(commentsEntity.getCommentLikeCount()+1);
         int number = commentsDao.updateById(commentsEntity);
         if(insert < 1 || number < 1){

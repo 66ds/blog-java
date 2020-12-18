@@ -84,6 +84,8 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
     public R addComments(CommentsEntity comments) {
         comments.setCommentDate(new Date());
         comments.setCommentLikeCount(0L);
+        //默认未读
+        comments.setIsRead(0L);
         //添加评论并且文章的评论数加1
         int insert = this.baseMapper.insert(comments);
         ArticlesEntity articlesEntity = articlesDao.selectById(comments.getArticleId());

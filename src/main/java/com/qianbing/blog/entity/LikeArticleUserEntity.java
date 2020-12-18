@@ -26,17 +26,22 @@ public class LikeArticleUserEntity implements Serializable {
 	@TableId
 	private Long likeId;
 	/**
-	 * $column.comments
+	 * 用户Id
 	 */
 	private Long userId;
 	/**
-	 * $column.comments
+	 * 文章id
 	 */
 	private Long articleId;
 
 	/**
-	 * $column.comments
+	 * 点赞日期
 	 */
 	private Date likeDate;
+
+	/**
+	 * 是否已读
+	 */
+	private Long isRead;
 
 }

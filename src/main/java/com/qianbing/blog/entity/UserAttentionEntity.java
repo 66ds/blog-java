@@ -24,12 +24,18 @@ public class UserAttentionEntity implements Serializable {
 	@TableId
 	private Long aId;
 	/**
-	 * $column.comments
+	 * 用户Id
 	 */
 	private Long userId;
+
 	/**
-	 * $column.comments
+	 * 被关注Id
 	 */
 	private Long attentionId;
+
+	/**
+	 * 是否已读
+	 */
+	private Long isRead;
 
 }

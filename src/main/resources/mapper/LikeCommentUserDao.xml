@@ -9,6 +9,7 @@
         <result property="userId" column="user_id"/>
         <result property="commentId" column="comment_id"/>
         <result property="likeDate" column="like_date"/>
+        <result property="isRead" column="is_read"/>
     </resultMap>
 
 

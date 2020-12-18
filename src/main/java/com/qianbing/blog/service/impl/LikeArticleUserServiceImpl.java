@@ -48,7 +48,7 @@ public class LikeArticleUserServiceImpl extends ServiceImpl<LikeArticleUserDao, 
     @Transactional
     @Override
     public R likeArticle(Long articleId, Integer userId) {
-        //如果已经点赞则取消,并且将文章的数量减1
+        //如果已经点赞则取消,并且将文章的点赞量-1
         ArticlesEntity articlesEntity = articlesDao.selectById(articleId);
         LikeArticleUserEntity likeArticleUserEntity = this.baseMapper.selectOne(new QueryWrapper<LikeArticleUserEntity>().eq("article_id", articleId).eq("user_id", userId));
         if(!StringUtils.isEmpty(likeArticleUserEntity)){
@@ -65,8 +65,10 @@ public class LikeArticleUserServiceImpl extends ServiceImpl<LikeArticleUserDao, 
         entity.setArticleId(articleId);
         entity.setLikeDate(new Date());
         entity.setUserId(userId.longValue());
+        //默认未读
+        entity.setIsRead(0L);
         int insert = this.baseMapper.insert(entity);
-        //修改文章的赞数量+1
+        //修改文章的点赞量+1
         articlesEntity.setArticleLikeCount(articlesEntity.getArticleLikeCount()+1);
         int number = articlesDao.updateById(articlesEntity);
         if(insert < 1 || number < 1){

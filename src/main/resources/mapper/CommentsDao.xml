@@ -14,6 +14,7 @@
         <result property="parentCommentId" column="parent_comment_id"/>
         <result property="commentChrome" column="comment_chrome"/>
         <result property="commentSys" column="comment_sys"/>
+        <result property="isRead" column="is_read"/>
     </resultMap>
 
 

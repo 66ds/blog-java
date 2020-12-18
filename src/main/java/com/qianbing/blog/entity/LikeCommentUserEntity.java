@@ -25,16 +25,21 @@ public class LikeCommentUserEntity implements Serializable {
 	@TableId
 	private Long likeId;
 	/**
-	 * $column.comments
+	 * 用户Id
 	 */
 	private Long userId;
 	/**
-	 * $column.comments
+	 * 评论Id
 	 */
 	private Long commentId;
 	/**
-	 * $column.comments
+	 * 点赞日期
 	 */
 	private Date likeDate;
+
+	/**
+	 * 是否已读
+	 */
+	private Long isRead;
 
 }

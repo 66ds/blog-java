@@ -52,4 +52,6 @@ public class CommentsEntity implements Serializable {
 
 	@TableField(exist = false)
 	private UsersEntity parentUsersEntity;
+
+	private Long isRead;
 }
