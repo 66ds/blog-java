@@ -8,18 +8,18 @@ import com.qianbing.blog.entity.ArticlesEntity;
 import com.qianbing.blog.entity.CommentsEntity;
 import com.qianbing.blog.entity.SortsEntity;
 import com.qianbing.blog.entity.UsersEntity;
+import com.qianbing.blog.entity.vo.NoReadCommentEntity;
 import com.qianbing.blog.service.CommentsService;
 import com.qianbing.blog.utils.Constant;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.Query;
 import com.qianbing.blog.utils.R;
+import com.qianbing.blog.vo.CommentVo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -102,6 +102,34 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
         CommentsEntity commentsEntity = this.baseMapper.selectById(parentCommentId);
         UsersEntity usersEntity = usersDao.selectById(commentsEntity.getUserId());
         return usersEntity;
+    }
+
+    @Override
+    public R getNoReadCommentInfo(long userId) {
+        List<NoReadCommentEntity> noReadCommentInfo = this.baseMapper.getNoReadCommentInfo(userId);
+        List<CommentVo> collect = noReadCommentInfo.stream().map(item -> {
+            List<CommentVo.User> list = new ArrayList<>();
+            CommentVo commentVo = new CommentVo();
+            String commentIds = item.getCommentIds();
+            String userIds = item.getUserIds();
+            String userNames = item.getUserNames();
+            List<Long> ts = Arrays.asList(commentIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<Long> longs = new ArrayList<>(Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toSet()));
+            List<String> strings = new ArrayList<>(Arrays.asList(userNames.split(",")).stream().map(s -> s.trim()).collect(Collectors.toSet()));
+            for (int i = 0; i<longs.size(); i++) {
+                CommentVo.User user = new CommentVo.User();
+                user.setUserId(longs.get(i));
+                user.setUserName(strings.get(i));
+                list.add(user);
+            }
+            commentVo.setUsers(list);
+            commentVo.setCommentIds(ts);
+            commentVo.setArticleId(item.getArticleId());
+            commentVo.setArticleTitle(item.getArticleTitle());
+            commentVo.setCreateTime(item.getCommentDate());
+            return commentVo;
+        }).collect(Collectors.toList());
+        return R.ok().setData(collect);
     }
 
 

@@ -96,6 +96,17 @@ public class CommentsPriController {
         return R.ok();
     }
 
+    /**
+     * 获取未读评论信息
+     * @param request
+     * @return
+     */
+    @RequestMapping("/no/read")
+    public R getNoReadCommentInfo(HttpServletRequest request){
+        Integer id = (Integer) request.getAttribute("id");
+        return commentsService.getNoReadCommentInfo(id.longValue());
+    }
+
 
 
 }

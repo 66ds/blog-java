@@ -1,6 +1,7 @@
 package com.qianbing.blog.vo;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import java.util.Date;
 import java.util.List;
@@ -12,6 +13,7 @@ public class CommentVo {
 
     private List<User> users;
 
+    @JsonFormat(pattern = "yyyy-MM-dd",timezone = "GMT+8")
     private Date createTime;
 
     private Long articleId;
