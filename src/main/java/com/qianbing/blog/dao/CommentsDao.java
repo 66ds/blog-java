@@ -25,4 +25,10 @@ public interface CommentsDao extends BaseMapper<CommentsEntity> {
      * @return
      */
     public List<NoReadCommentEntity> getNoReadCommentInfo(@Param("userId") Long userId);
+
+    /**
+     * 清空信息(单个和多个)
+     * @param commentIds
+     */
+    void deleteNoReadCommentInfo(@Param("list") List<Long> commentIds);
 }

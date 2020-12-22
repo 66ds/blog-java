@@ -1,6 +1,7 @@
 package com.qianbing.blog.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.qianbing.blog.entity.CommentsEntity;
@@ -101,10 +102,20 @@ public class CommentsPriController {
      * @param request
      * @return
      */
-    @RequestMapping("/no/read")
+    @RequestMapping("/get/no/read")
     public R getNoReadCommentInfo(HttpServletRequest request){
         Integer id = (Integer) request.getAttribute("id");
         return commentsService.getNoReadCommentInfo(id.longValue());
+    }
+
+    /**
+     * 清空信息(单个和多个)
+     * @param commentIds
+     * @return
+     */
+    @RequestMapping("/delete/no/read")
+    public R deleteNoReadCommentInfo(@RequestBody List<Long> commentIds){
+        return commentsService.deleteNoReadCommentInfo(commentIds);
     }
 
 

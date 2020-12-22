@@ -27,5 +27,8 @@ public interface CommentsService extends IService<CommentsEntity> {
     UsersEntity selectUserInfo(Long parentCommentId);
 
     R getNoReadCommentInfo(long userId);
+
+    R deleteNoReadCommentInfo(List<Long> commentIds);
+
 }
 

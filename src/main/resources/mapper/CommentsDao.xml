@@ -26,4 +26,16 @@
         GROUP BY DATE(c.comment_date),c.article_id
         ORDER BY DATE(c.comment_date) DESC
     </select>
+
+    <!-- 清空信息(单个和多个)-->
+    <update id="deleteNoReadCommentInfo" parameterType="java.util.List">
+        update zj_comments set is_read = 1
+        <if test="list!=null">
+            where comment_id in
+            <foreach collection="list" item="number" index="index" open="(" separator="," close=")">
+                #{number }
+            </foreach>
+        </if>
+    </update>
+
 </mapper>

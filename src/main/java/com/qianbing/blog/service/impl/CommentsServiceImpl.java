@@ -132,6 +132,12 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
         return R.ok().setData(collect);
     }
 
+    @Override
+    public R deleteNoReadCommentInfo(List<Long> commentIds) {
+        this.baseMapper.deleteNoReadCommentInfo(commentIds);
+        return  R.ok(CommentsConstrant.DELETE_SUCCESS);
+    }
+
 
     //查找父评论下的子评论
     private List<CommentsEntity> getChildrenTree(CommentsEntity commentsEntity, List<CommentsEntity> commentsEntityList) {
