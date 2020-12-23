@@ -123,7 +123,7 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsDao, CommentsEntity
                 list.add(user);
             }
             commentVo.setUsers(list);
-            commentVo.setCommentIds(ts);
+            commentVo.setIds(ts);
             commentVo.setArticleId(item.getArticleId());
             commentVo.setArticleTitle(item.getArticleTitle());
             commentVo.setCreateTime(item.getCommentDate());

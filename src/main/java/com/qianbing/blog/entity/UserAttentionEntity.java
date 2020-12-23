@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
+import java.util.Date;
+
 import lombok.Data;
 
 /**
@@ -37,5 +39,10 @@ public class UserAttentionEntity implements Serializable {
 	 * 是否已读
 	 */
 	private Long isRead;
+
+	/**
+	 * 关注时间
+	 */
+	private Date attentionDate;
 
 }

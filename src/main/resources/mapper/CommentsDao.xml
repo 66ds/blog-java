@@ -19,7 +19,7 @@
 
    <!-- 获取未读评论信息 -->
     <select id="getNoReadCommentInfo" resultType="com.qianbing.blog.entity.vo.NoReadCommentEntity">
-        SELECT GROUP_CONCAT(c.comment_id) as commentIds,GROUP_CONCAT( DISTINCT c.user_id) as userIds,GROUP_CONCAT(DISTINCT u.user_nickName) as userNames,c.article_id as articleId,a.article_title as articleTitle,DATE(c.comment_date) as commentDate FROM zj_comments c
+        SELECT GROUP_CONCAT(c.comment_id) as commentIds,GROUP_CONCAT(c.user_id) as userIds,GROUP_CONCAT(u.user_nickName) as userNames,c.article_id as articleId,a.article_title as articleTitle,DATE(c.comment_date) as commentDate FROM zj_comments c
         LEFT JOIN zj_users u ON c.`user_id` = u.`user_id`
         LEFT JOIN zj_articles a ON c.`article_id` = a.`article_id`
         WHERE c.parent_comment_id IN (SELECT comment_id FROM zj_comments WHERE user_id = #{userId}) AND c.is_read = 0

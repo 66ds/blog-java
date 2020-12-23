@@ -1,6 +1,8 @@
 package com.qianbing.blog.controller;
 
 import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import com.qianbing.blog.constrant.UserAttentionConstrant;
@@ -64,9 +66,31 @@ public class UserAttentionPriController {
         UserAttentionEntity userAttention = new UserAttentionEntity();
         userAttention.setUserId(id.longValue());
         userAttention.setAttentionId(attentionId);
+        userAttention.setAttentionDate(new Date());
         //默认未读
         userAttention.setIsRead(0L);
 		return userAttentionService.saveAttentionInfo(userAttention);
+    }
+
+    /**
+     * 获取谁关注我信息
+     * @param request
+     * @return
+     */
+    @RequestMapping("/get/who/attention")
+    public R getWhoAttentionMeInfo(HttpServletRequest request){
+        Integer id = (Integer) request.getAttribute("id");
+        return userAttentionService.getWhoAttentionMeInfo(id.longValue());
+    }
+
+    /**
+     * 清空信息(单个和多个)
+     * @param attentionIds
+     * @return
+     */
+    @RequestMapping("/delete/who/attention")
+    public R deleteWhoAttentionMeInfo(@RequestBody List<Long> attentionIds){
+        return userAttentionService.deleteWhoAttentionMeInfo(attentionIds);
     }
 
     /**
@@ -88,7 +112,6 @@ public class UserAttentionPriController {
     //@RequiresPermissions("coupon:userattention:delete")
     public R delete(@RequestBody Long[] aIds){
 		userAttentionService.removeByIds(Arrays.asList(aIds));
-
         return R.ok();
     }
 

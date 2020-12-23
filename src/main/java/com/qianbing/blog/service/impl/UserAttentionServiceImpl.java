@@ -3,12 +3,20 @@ package com.qianbing.blog.service.impl;
 import com.qianbing.blog.constrant.UserAttentionConstrant;
 import com.qianbing.blog.dao.UserAttentionDao;
 import com.qianbing.blog.entity.UserAttentionEntity;
+import com.qianbing.blog.entity.vo.WhoAttentionMeEntity;
 import com.qianbing.blog.service.UserAttentionService;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.Query;
 import com.qianbing.blog.utils.R;
+import com.qianbing.blog.vo.common.CommonVo;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -53,5 +61,38 @@ public class UserAttentionServiceImpl extends ServiceImpl<UserAttentionDao, User
         UserAttentionEntity userAttentionEntity = this.baseMapper.selectOne(new QueryWrapper<UserAttentionEntity>().eq("user_id", userAttention.getUserId()).eq("attention_id", userAttention.getAttentionId()));
         return userAttentionEntity;
     }
+
+    @Override
+    public R getWhoAttentionMeInfo(long userId) {
+        List<WhoAttentionMeEntity> whoAttentionMeInfo = this.baseMapper.getWhoAttentionMeInfo(userId);
+        List<CommonVo> collect = whoAttentionMeInfo.stream().map(item -> {
+            List<CommonVo.User> list = new ArrayList<>();
+            CommonVo commonVo = new CommonVo();
+            String attentionIds = item.getAttentionIds();
+            String userIds = item.getUserIds();
+            String userNames = item.getUserNames();
+            List<Long> ts = Arrays.asList(attentionIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<Long> longs = Arrays.asList(userIds.split(",")).stream().map(s -> Long.parseLong(s.trim())).collect(Collectors.toList());
+            List<String> strings = Arrays.asList(userNames.split(",")).stream().map(s -> s.trim()).collect(Collectors.toList());
+            for (int i = 0; i < longs.size(); i++) {
+                CommonVo.User user = new CommonVo.User();
+                user.setUserId(longs.get(i));
+                user.setUserName(strings.get(i));
+                list.add(user);
+            }
+            commonVo.setIds(ts);
+            commonVo.setCreateTime(item.getAttentionDate());
+            commonVo.setUsers(list);
+            return commonVo;
+        }).collect(Collectors.toList());
+        return R.ok().setData(collect);
+    }
+
+    @Override
+    public R deleteWhoAttentionMeInfo(List<Long> attentionIds) {
+        this.baseMapper.deleteWhoAttentionMeInfo(attentionIds);
+        return  R.ok(UserAttentionConstrant.DELETE_SUCCESS);
+    }
+
 
 }

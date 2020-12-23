@@ -5,6 +5,7 @@ import com.qianbing.blog.entity.UserAttentionEntity;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,5 +22,9 @@ public interface UserAttentionService extends IService<UserAttentionEntity> {
     R saveAttentionInfo(UserAttentionEntity userAttention);
 
     UserAttentionEntity selectAttentionInfo(UserAttentionEntity userAttention);
+
+    R getWhoAttentionMeInfo(long longValue);
+
+    R deleteWhoAttentionMeInfo(List<Long> attentionIds);
 }
 
