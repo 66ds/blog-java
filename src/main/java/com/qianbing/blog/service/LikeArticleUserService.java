@@ -5,6 +5,7 @@ import com.qianbing.blog.entity.LikeArticleUserEntity;
 import com.qianbing.blog.utils.PageUtils;
 import com.qianbing.blog.utils.R;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,5 +22,9 @@ public interface LikeArticleUserService extends IService<LikeArticleUserEntity> 
     R selectList(Long articleId, Integer userId);
 
     R likeArticle(Long articleId, Integer userId);
+
+    R getWhoDigMeInfo(long longValue);
+
+    R deleteWhoDigMeInfo(List<Map<String, Object>> likeIds);
 }
 

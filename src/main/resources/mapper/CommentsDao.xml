@@ -24,7 +24,7 @@
         LEFT JOIN zj_articles a ON c.`article_id` = a.`article_id`
         WHERE c.parent_comment_id IN (SELECT comment_id FROM zj_comments WHERE user_id = #{userId}) AND c.is_read = 0
         GROUP BY DATE(c.comment_date),c.article_id
-        ORDER BY DATE(c.comment_date) DESC
+        ORDER BY MAX(c.comment_date) DESC
     </select>
 
     <!-- 清空信息(单个和多个)-->

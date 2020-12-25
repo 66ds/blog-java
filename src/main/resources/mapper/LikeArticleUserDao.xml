@@ -3,7 +3,7 @@
 
 <mapper namespace="com.qianbing.blog.dao.LikeArticleUserDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
+    <!-- 可根据自己的需求，是否要使用 -->
     <resultMap type="com.qianbing.blog.entity.LikeArticleUserEntity" id="likeArticleUserMap">
         <result property="likeId" column="like_id"/>
         <result property="userId" column="user_id"/>
@@ -12,5 +12,21 @@
         <result property="isRead" column="is_read"/>
     </resultMap>
 
+    <!-- 获取谁点赞我的信息-->
+    <select id="getWhoDigMeInfo" resultType="com.qianbing.blog.entity.vo.WhoDigMeEntity">
+          SELECT likeIds,userIds,userNames,articleId,content,DATE(likeDate),alias  FROM ((SELECT GROUP_CONCAT(au.like_id) AS likeIds,GROUP_CONCAT(au.user_id) AS userIds,GROUP_CONCAT(u.user_nickName) AS userNames,au.article_id AS articleId,a.article_title AS content,MAX(au.like_date) AS likeDate,1 AS alias FROM zj_like_article_user au
+          LEFT JOIN zj_users u ON au.`user_id` = u.`user_id`
+          LEFT JOIN zj_articles a ON au.`article_id` = a.`article_id`
+          WHERE au.article_id IN (SELECT article_id FROM zj_articles WHERE zj_articles.user_id = #{userId}) AND au.is_read = 0
+          GROUP BY DATE(au.like_date),au.article_id
+          ORDER BY MAX(au.like_date) DESC)
+          UNION ALL
+          (SELECT GROUP_CONCAT(cu.like_id) AS likeIds,GROUP_CONCAT(cu.user_id) AS userIds,GROUP_CONCAT(u.user_nickName) AS userNames,c.article_id AS articleId,c.comment_content AS content,MAX(cu.like_date) AS likeDate,2 AS alias FROM zj_like_comment_user cu
+          LEFT JOIN zj_users u ON cu.`user_id` = u.`user_id`
+          LEFT JOIN zj_comments c ON cu.`comment_id` = c.`comment_id`
+          WHERE cu.comment_id IN (SELECT comment_id FROM zj_comments WHERE zj_comments.user_id = #{userId}) AND cu.is_read = 0
+          GROUP BY DATE(cu.like_date),cu.comment_id
+          ORDER BY MAX(cu.like_date) DESC)) AS c ORDER BY c.likeDate DESC
+    </select>
 
 </mapper>

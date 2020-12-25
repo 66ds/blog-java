@@ -1,6 +1,7 @@
 package com.qianbing.blog.controller;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import com.qianbing.blog.entity.LikeArticleUserEntity;
@@ -26,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/api/v1/pri/likearticleuser")
-public class LikeArticleUserController {
+public class LikeArticleUserPriController {
     @Autowired
     private LikeArticleUserService likeArticleUserService;
 
@@ -108,5 +109,27 @@ public class LikeArticleUserController {
     public R likeArticle(@PathVariable("articleId") Long articleId, HttpServletRequest request){
         Integer userId = (Integer) request.getAttribute("id");
         return likeArticleUserService.likeArticle(articleId,userId);
+    }
+
+    /**
+     * 获取谁点赞我的信息
+     * @param request
+     * @return
+     */
+    @RequestMapping("/get/who/dig")
+    public R getWhoDigMeInfo(HttpServletRequest request){
+        Integer id = (Integer) request.getAttribute("id");
+        return likeArticleUserService.getWhoDigMeInfo(id.longValue());
+    }
+
+
+    /**
+     * 清空信息(单个和多个)
+     * @param likeIds
+     * @return
+     */
+    @RequestMapping("/delete/who/dig")
+    public R deleteWhoDigMeInfo(@RequestBody List<Map<String,Object>> likeIds){
+        return likeArticleUserService.deleteWhoDigMeInfo(likeIds);
     }
 }

@@ -18,7 +18,7 @@
 		left join zj_user_attention a on u.user_id = a.user_id
 		where a.attention_id = #{userId} AND a.is_read = 0
 		GROUP BY DATE(a.attention_date)
-		ORDER BY DATE(a.attention_date) DESC
+		ORDER BY MAX(a.attention_date) DESC
     </select>
 
     <!-- 清空信息(单个和多个)-->
